@@ -43,6 +43,7 @@ class AddressController extends Controller
 
     public function __construct(AddressRepository $addressRepo, CustomFieldRepository $customFieldRepo, UserRepository $userRepo)
     {
+        
         parent::__construct();
         $this->addressRepository = $addressRepo;
         $this->customFieldRepository = $customFieldRepo;
