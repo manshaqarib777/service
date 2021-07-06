@@ -67,7 +67,9 @@ class Category extends Model implements HasMedia
         'description',
         'featured',
         'order',
-        'parent_id'
+        'parent_id',
+        'country_id'
+
     ];
     /**
      * The attributes that should be casted to native types.
@@ -195,4 +197,9 @@ class Category extends Model implements HasMedia
     {
         return $this->morphMany('App\Models\Discountable', 'discountable');
     }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
+    }
+
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * File name: FaqCategoryRepository.php
- * Last modified: 2021.01.03 at 15:29:51
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Repositories;
 
@@ -19,7 +13,7 @@ use InfyOm\Generator\Common\BaseRepository;
  * @method FaqCategory findWithoutFail($id, $columns = ['*'])
  * @method FaqCategory find($id, $columns = ['*'])
  * @method FaqCategory first($columns = ['*'])
- */
+*/
 class FaqCategoryRepository extends BaseRepository
 {
     /**
