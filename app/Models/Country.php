@@ -34,6 +34,8 @@ class Country extends Model
         'code',
         'active',
         'currency_id',
+        'distance_unit',
+        'default_tax',
     ];
 
     /**

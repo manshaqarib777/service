@@ -12,7 +12,27 @@
             </div>
         </div>
     </div>
-
+    <div class="form-group row ">
+        {!! Form::label('distance_unit', trans("lang.app_setting_distance_unit"),['class' => 'col-4 control-label text-right']) !!}
+        <div class="col-8">
+            {!! Form::select('distance_unit',
+            [
+            'km' => trans('lang.app_setting_km'),
+            'mi' => trans('lang.app_setting_mi'),
+            ]
+            , null, ['class' => 'select2 form-control']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_distance_unit_help") }}</div>
+        </div>
+    </div>
+    <div class="form-group row col-6">
+        {!! Form::label('default_tax', trans('lang.app_setting_default_tax'), ['class' => 'col-4 control-label text-right']) !!}
+        <div class="col-8">
+            {!! Form::text('default_tax', null,  ['class' => 'form-control','placeholder'=>  trans('lang.app_setting_default_tax_placeholder')]) !!}
+            <div class="form-text text-muted">
+                {!! trans('lang.app_setting_default_tax_help') !!}
+            </div>
+        </div>
+    </div>
 
     <!-- Code Field -->
     <div class="form-group row ">
