@@ -1,20 +1,21 @@
 <?php
-/*
+/**
  * File name: CategoryAPIController.php
- * Last modified: 2021.03.24 at 21:33:26
+ * Last modified: 2020.05.04 at 09:04:18
  * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
+ * Copyright (c) 2020
+ *
  */
 
 namespace App\Http\Controllers\API;
 
 
-use App\Criteria\Categories\NearCriteria;
-use App\Criteria\Categories\ParentCriteria;
+use App\Criteria\Categories\CategoriesOfFieldsCriteria;
+use App\Criteria\Categories\CategoriesOfMarketCriteria;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
-use Illuminate\Http\JsonResponse;
+use Flash;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -39,15 +40,15 @@ class CategoryAPIController extends Controller
      * GET|HEAD /categories
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         try{
             $this->categoryRepository->pushCriteria(new RequestCriteria($request));
-            $this->categoryRepository->pushCriteria(new ParentCriteria($request));
-            $this->categoryRepository->pushCriteria(new NearCriteria($request));
             $this->categoryRepository->pushCriteria(new LimitOffsetCriteria($request));
+            $this->categoryRepository->pushCriteria(new CategoriesOfFieldsCriteria($request));
+            $this->categoryRepository->pushCriteria(new CategoriesOfMarketCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());
         }
@@ -60,9 +61,9 @@ class CategoryAPIController extends Controller
      * Display the specified Category.
      * GET|HEAD /categories/{id}
      *
-     * @param int $id
+     * @param  int $id
      *
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {

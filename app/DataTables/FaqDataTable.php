@@ -1,21 +1,12 @@
 <?php
-/*
- * File name: FaqDataTable.php
- * Last modified: 2021.04.12 at 10:16:44
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\DataTables;
 
-use App\Models\CustomField;
 use App\Models\Faq;
-use App\Models\Post;
-use Barryvdh\DomPDF\Facade as PDF;
-use Yajra\DataTables\DataTableAbstract;
-use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Builder;
+use App\Models\CustomField;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\EloquentDataTable;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class FaqDataTable extends DataTable
 {
@@ -29,29 +20,60 @@ class FaqDataTable extends DataTable
      * Build DataTable class.
      *
      * @param mixed $query Results from query() method.
-     * @return DataTableAbstract
+     * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
+        if (auth()->user()->hasRole('client'))
+            $query = $query->where('user_id', auth()->id());
+        if (auth()->user()->hasRole('branch'))
+            $query = $query->whereHas('faqCategory.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
-            ->editColumn('question', function ($faq) {
-                return getStripedHtmlColumn($faq, 'question');
-            })
-            ->editColumn('answer', function ($faq) {
-                return getStripedHtmlColumn($faq, 'answer');
-            })
-            ->editColumn('faq_category.name', function ($faq) {
-                return getLinksColumnByRouteName([$faq->faqCategory], "faqCategories.edit", 'id', 'name');
-            })
-            ->editColumn('updated_at', function ($faq) {
+        ->editColumn('country', function ($faq) {
+            return $faq['faqCategory']['country']['name'];
+        })    
+        ->editColumn('updated_at', function ($faq) {
                 return getDateColumn($faq, 'updated_at');
             })
             ->addColumn('action', 'faqs.datatables_actions')
             ->rawColumns(array_merge($columns, ['action']));
 
         return $dataTable;
+    }
+
+    /**
+     * Get query source of dataTable.
+     *
+     * @param \App\Models\Post $model
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function query(Faq $model)
+    {
+        return $model->newQuery()->with("faqCategory")->select('faqs.*');
+    }
+
+    /**
+     * Optional method if you want to use html builder.
+     *
+     * @return \Yajra\DataTables\Html\Builder
+     */
+    public function html()
+    {
+        return $this->builder()
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->addAction(['title'=>trans('lang.actions'),'width' => '80px', 'printable' => false, 'responsivePriority' => '100'])
+            ->parameters(array_merge(
+                config('datatables-buttons.parameters'), [
+                    'language' => json_decode(
+                        file_get_contents(base_path('resources/lang/' . app()->getLocale() . '/datatable.json')
+                        ), true)
+                ]
+            ));
     }
 
     /**
@@ -74,8 +96,12 @@ class FaqDataTable extends DataTable
             ],
             [
                 'data' => 'faq_category.name',
-                'name' => 'faqCategory.name',
                 'title' => trans('lang.faq_faq_category_id'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [
@@ -101,34 +127,13 @@ class FaqDataTable extends DataTable
     }
 
     /**
-     * Get query source of dataTable.
+     * Get filename for export.
      *
-     * @param Faq $model
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return string
      */
-    public function query(Faq $model)
+    protected function filename()
     {
-        return $model->newQuery()->with("faqCategory")->select('faqs.*');
-    }
-
-    /**
-     * Optional method if you want to use html builder.
-     *
-     * @return Builder
-     */
-    public function html()
-    {
-        return $this->builder()
-            ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->addAction(['title' => trans('lang.actions'), 'width' => '80px', 'printable' => false, 'responsivePriority' => '100'])
-            ->parameters(array_merge(
-                config('datatables-buttons.parameters'), [
-                    'language' => json_decode(
-                        file_get_contents(base_path('resources/lang/' . app()->getLocale() . '/datatable.json')
-                        ), true)
-                ]
-            ));
+        return 'faqsdatatable_' . time();
     }
 
     /**
@@ -140,15 +145,5 @@ class FaqDataTable extends DataTable
         $data = $this->getDataForPrint();
         $pdf = PDF::loadView($this->printPreview, compact('data'));
         return $pdf->download($this->filename() . '.pdf');
-    }
-
-    /**
-     * Get filename for export.
-     *
-     * @return string
-     */
-    protected function filename()
-    {
-        return 'faqsdatatable_' . time();
     }
 }

@@ -1,25 +1,16 @@
 <?php
-/*
- * File name: FaqController.php
- * Last modified: 2021.01.22 at 18:55:13
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Http\Controllers;
 
 use App\DataTables\FaqDataTable;
+use App\Http\Requests;
 use App\Http\Requests\CreateFaqRequest;
 use App\Http\Requests\UpdateFaqRequest;
+use App\Repositories\FaqRepository;
 use App\Repositories\CustomFieldRepository;
 use App\Repositories\FaqCategoryRepository;
-use App\Repositories\FaqRepository;
-use Exception;
 use Flash;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -35,11 +26,11 @@ class FaqController extends Controller
     private $customFieldRepository;
 
     /**
-     * @var FaqCategoryRepository
-     */
-    private $faqCategoryRepository;
+  * @var FaqCategoryRepository
+  */
+private $faqCategoryRepository;
 
-    public function __construct(FaqRepository $faqRepo, CustomFieldRepository $customFieldRepo, FaqCategoryRepository $faq_categoryRepo)
+    public function __construct(FaqRepository $faqRepo, CustomFieldRepository $customFieldRepo , FaqCategoryRepository $faq_categoryRepo)
     {
         parent::__construct();
         $this->faqRepository = $faqRepo;
@@ -65,14 +56,14 @@ class FaqController extends Controller
      */
     public function create()
     {
-        $faqCategory = $this->faqCategoryRepository->pluck('name', 'id');
-
-        $hasCustomField = in_array($this->faqRepository->model(), setting('custom_field_models', []));
-        if ($hasCustomField) {
-            $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
-            $html = generateCustomField($customFields);
-        }
-        return view('faqs.create')->with("customFields", isset($html) ? $html : false)->with("faqCategory", $faqCategory);
+        $faqCategory = $this->faqCategoryRepository->pluck('name','id');
+        
+        $hasCustomField = in_array($this->faqRepository->model(),setting('custom_field_models',[]));
+            if($hasCustomField){
+                $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
+                $html = generateCustomField($customFields);
+            }
+        return view('faqs.create')->with("customFields", isset($html) ? $html : false)->with("faqCategory",$faqCategory);
     }
 
     /**
@@ -88,13 +79,13 @@ class FaqController extends Controller
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
         try {
             $faq = $this->faqRepository->create($input);
-            $faq->customFieldsValues()->createMany(getCustomFieldsValues($customFields, $request));
-
+            $faq->customFieldsValues()->createMany(getCustomFieldsValues($customFields,$request));
+            
         } catch (ValidatorException $e) {
             Flash::error($e->getMessage());
         }
 
-        Flash::success(__('lang.saved_successfully', ['operator' => __('lang.faq')]));
+        Flash::success(__('lang.saved_successfully',['operator' => __('lang.faq')]));
 
         return redirect(route('faqs.index'));
     }
@@ -102,7 +93,7 @@ class FaqController extends Controller
     /**
      * Display the specified Faq.
      *
-     * @param int $id
+     * @param  int $id
      *
      * @return Response
      */
@@ -122,37 +113,38 @@ class FaqController extends Controller
     /**
      * Show the form for editing the specified Faq.
      *
-     * @param int $id
+     * @param  int $id
      *
      * @return Response
      */
     public function edit($id)
     {
         $faq = $this->faqRepository->findWithoutFail($id);
-        $faqCategory = $this->faqCategoryRepository->pluck('name', 'id');
-
+        $faqCategory = $this->faqCategoryRepository->pluck('name','id');
+        
 
         if (empty($faq)) {
-            Flash::error(__('lang.not_found', ['operator' => __('lang.faq')]));
+            Flash::error(__('lang.not_found',['operator' => __('lang.faq')]));
 
             return redirect(route('faqs.index'));
         }
         $customFieldsValues = $faq->customFieldsValues()->with('customField')->get();
-        $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
-        $hasCustomField = in_array($this->faqRepository->model(), setting('custom_field_models', []));
-        if ($hasCustomField) {
+        $customFields =  $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
+        $hasCustomField = in_array($this->faqRepository->model(),setting('custom_field_models',[]));
+        if($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
 
-        return view('faqs.edit')->with('faq', $faq)->with("customFields", isset($html) ? $html : false)->with("faqCategory", $faqCategory);
+        return view('faqs.edit')->with('faq', $faq)->with("customFields", isset($html) ? $html : false)->with("faqCategory",$faqCategory);
     }
-
 
     /**
      * Update the specified Faq in storage.
-     * @param $id
+     *
+     * @param  int              $id
      * @param UpdateFaqRequest $request
-     * @return Application|RedirectResponse|Redirector
+     *
+     * @return Response
      */
     public function update($id, UpdateFaqRequest $request)
     {
@@ -166,17 +158,17 @@ class FaqController extends Controller
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->faqRepository->model());
         try {
             $faq = $this->faqRepository->update($input, $id);
-
-
-            foreach (getCustomFieldsValues($customFields, $request) as $value) {
+            
+            
+            foreach (getCustomFieldsValues($customFields, $request) as $value){
                 $faq->customFieldsValues()
-                    ->updateOrCreate(['custom_field_id' => $value['custom_field_id']], $value);
+                    ->updateOrCreate(['custom_field_id'=>$value['custom_field_id']],$value);
             }
         } catch (ValidatorException $e) {
             Flash::error($e->getMessage());
         }
 
-        Flash::success(__('lang.updated_successfully', ['operator' => __('lang.faq')]));
+        Flash::success(__('lang.updated_successfully',['operator' => __('lang.faq')]));
 
         return redirect(route('faqs.index'));
     }
@@ -184,9 +176,9 @@ class FaqController extends Controller
     /**
      * Remove the specified Faq from storage.
      *
-     * @param int $id
+     * @param  int $id
      *
-     * @return
+     * @return Response
      */
     public function destroy($id)
     {
@@ -200,12 +192,12 @@ class FaqController extends Controller
 
         $this->faqRepository->delete($id);
 
-        Flash::success(__('lang.deleted_successfully', ['operator' => __('lang.faq')]));
+        Flash::success(__('lang.deleted_successfully',['operator' => __('lang.faq')]));
 
         return redirect(route('faqs.index'));
     }
 
-    /**
+        /**
      * Remove Media of Faq
      * @param Request $request
      */
@@ -214,10 +206,10 @@ class FaqController extends Controller
         $input = $request->all();
         $faq = $this->faqRepository->findWithoutFail($input['id']);
         try {
-            if ($faq->hasMedia($input['collection'])) {
+            if($faq->hasMedia($input['collection'])){
                 $faq->getFirstMedia($input['collection'])->delete();
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
     }

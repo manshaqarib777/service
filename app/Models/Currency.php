@@ -1,14 +1,14 @@
 <?php
-/*
+/**
  * File name: Currency.php
- * Last modified: 2021.04.12 at 09:50:30
+ * Last modified: 2020.04.30 at 08:21:08
  * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
+ * Copyright (c) 2020
+ *
  */
 
 namespace App\Models;
 
-use App\Traits\HasTranslations;
 use Eloquent as Model;
 
 /**
@@ -19,12 +19,33 @@ use Eloquent as Model;
  * @property string name
  * @property string symbol
  * @property string code
- * @property integer decimal_digits
- * @property integer rounding
+ * @property unsignedTinyInteger decimal_digits
+ * @property unsignedTinyInteger rounding
  */
 class Currency extends Model
 {
-    use HasTranslations;
+
+    public $table = 'currencies';
+    
+
+
+    public $fillable = [
+        'name',
+        'symbol',
+        'code',
+        'decimal_digits'
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'name' => 'string',
+        'symbol' => 'string',
+        'code' => 'string'
+    ];
 
     /**
      * Validation rules
@@ -36,29 +57,7 @@ class Currency extends Model
         'symbol' => 'required',
         'code' => 'required',
     ];
-    public $translatable = [
-        'name',
-        'symbol',
-        'code',
-    ];
-    public $table = 'currencies';
-    public $fillable = [
-        'name',
-        'symbol',
-        'code',
-        'decimal_digits',
-        'rounding'
-    ];
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'name' => 'string',
-        'symbol' => 'string',
-        'code' => 'string'
-    ];
+
     /**
      * New Attributes
      *
@@ -70,29 +69,29 @@ class Currency extends Model
 
     ];
 
-    public function getCustomFieldsAttribute()
-    {
-        $hasCustomField = in_array(static::class, setting('custom_field_models', []));
-        if (!$hasCustomField) {
-            return [];
-        }
-        $array = $this->customFieldsValues()
-            ->join('custom_fields', 'custom_fields.id', '=', 'custom_field_values.custom_field_id')
-            ->where('custom_fields.in_table', '=', true)
-            ->get()->toArray();
-
-        return convertToAssoc($array, 'name');
-    }
-
     public function customFieldsValues()
     {
         return $this->morphMany('App\Models\CustomFieldValue', 'customizable');
     }
 
-    public function getNameSymbolAttribute()
+    public function getCustomFieldsAttribute()
     {
+        $hasCustomField = in_array(static::class,setting('custom_field_models',[]));
+        if (!$hasCustomField){
+            return [];
+        }
+        $array = $this->customFieldsValues()
+            ->join('custom_fields','custom_fields.id','=','custom_field_values.custom_field_id')
+            ->where('custom_fields.in_table','=',true)
+            ->get()->toArray();
+
+        return convertToAssoc($array,'name');
+    }
+
+    public function getNameSymbolAttribute() {
         return $this->name . ' - ' . $this->symbol;
     }
 
-
+    
+    
 }

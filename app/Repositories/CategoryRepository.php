@@ -31,7 +31,8 @@ class CategoryRepository extends BaseRepository
         'description',
         'featured',
         'order',
-        'parent_id'
+        'parent_id',
+        'country_id'
     ];
 
     /**
