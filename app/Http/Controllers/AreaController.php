@@ -56,9 +56,8 @@ class AreaController extends Controller
         $area = $this->areaRepository->pluck('name','id');
         
         $countries = $this->countryRepository->all()->pluck('name','id');
-        $states = $this->stateRepository->all()->pluck('name','id');
 
-        return view('settings.areas.create')->with("area",$area)->with('countries',$countries)->with('states',$states);
+        return view('settings.areas.create')->with("area",$area)->with('countries',$countries);
     }
 
     /**
@@ -121,9 +120,8 @@ class AreaController extends Controller
             return redirect(route('areas.index'));
         }
         $countries = $this->countryRepository->all()->pluck('name','id');
-        $states = $this->stateRepository->all()->pluck('name','id');
-
-        return view('settings.areas.edit')->with("area",$area)->with("countries",$countries)->with("states",$states);
+        
+        return view('settings.areas.edit')->with("area",$area)->with("countries",$countries);
     }
 
     /**

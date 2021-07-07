@@ -31,7 +31,10 @@ class AddressRepository extends BaseRepository
         'latitude',
         'longitude',
         'default',
-        'user_id'
+        'user_id',
+        'country_id',
+        'state_id',
+        'area_id'
     ];
 
     /**

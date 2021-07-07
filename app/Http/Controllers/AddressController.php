@@ -25,6 +25,9 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
+use App\Repositories\CountryRepository;
+use App\Repositories\StateRepository;
+use App\Repositories\AreaRepository;
 
 class AddressController extends Controller
 {
@@ -41,12 +44,19 @@ class AddressController extends Controller
      */
     private $userRepository;
 
-    public function __construct(AddressRepository $addressRepo, CustomFieldRepository $customFieldRepo, UserRepository $userRepo)
+    private $areaRepository;
+    private $countryRepository;
+    private $stateRepository;
+
+    public function __construct(AddressRepository $addressRepo, CustomFieldRepository $customFieldRepo, UserRepository $userRepo,AreaRepository $areaRepo,CountryRepository $countryRepo,StateRepository $stateRepo)
     {
         parent::__construct();
         $this->addressRepository = $addressRepo;
         $this->customFieldRepository = $customFieldRepo;
         $this->userRepository = $userRepo;
+        $this->areaRepository = $areaRepo;
+        $this->countryRepository = $countryRepo;
+        $this->stateRepository = $stateRepo;
     }
 
     /**
@@ -72,7 +82,8 @@ class AddressController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->addressRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('addresses.create')->with("customFields", isset($html) ? $html : false);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('addresses.create')->with("customFields", isset($html) ? $html : false)->with("countries",$countries);
     }
 
     /**
@@ -146,8 +157,9 @@ class AddressController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
-        return view('addresses.edit')->with('address', $address)->with("customFields", isset($html) ? $html : false);
+        return view('addresses.edit')->with('address', $address)->with("customFields", isset($html) ? $html : false)->with("countries",$countries);
     }
 
     /**

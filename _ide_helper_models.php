@@ -33,20 +33,29 @@ namespace App\Models{
  * @property int $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $country_id
+ * @property int|null $state_id
+ * @property int|null $area_id
+ * @property-read \App\Models\Area|null $area
+ * @property-read \App\Models\Country|null $country
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomFieldValue[] $customFieldsValues
  * @property-read int|null $custom_fields_values_count
  * @property-read mixed $custom_fields
+ * @property-read \App\Models\State|null $state
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Address query()
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereAreaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereDefault($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereLatitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereStateId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
  */
@@ -671,6 +680,7 @@ namespace App\Models{
  * @property bool|null $accepted
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $country_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Address[] $addresses
  * @property-read int|null $addresses_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AvailabilityHour[] $availabilityHours
@@ -707,6 +717,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereAccepted($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereAvailabilityRange($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProvider whereEProviderTypeId($value)
@@ -789,6 +800,7 @@ namespace App\Models{
  * @property bool $disabled
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $country_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomFieldValue[] $customFieldsValues
  * @property-read int|null $custom_fields_values_count
  * @property-read mixed $custom_fields
@@ -797,6 +809,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType query()
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType whereCommission($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EProviderType whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType whereDisabled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EProviderType whereId($value)
@@ -1643,6 +1656,8 @@ namespace App\Models{
  * @property int|null $country_id
  * @property int|null $state_id
  * @property int|null $area_id
+ * @property-read \App\Models\Area|null $area
+ * @property-read \App\Models\Country|null $country
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomFieldValue[] $customFieldsValues
  * @property-read int|null $custom_fields_values_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EProvider[] $eproviders
@@ -1657,6 +1672,7 @@ namespace App\Models{
  * @property-read int|null $permissions_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
  * @property-read int|null $roles_count
+ * @property-read \App\Models\State|null $state
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Cashier\Subscription[] $subscriptions
  * @property-read int|null $subscriptions_count
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()

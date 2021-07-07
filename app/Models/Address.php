@@ -50,7 +50,10 @@ class Address extends Model implements Castable
         'latitude',
         'longitude',
         'default',
-        'user_id'
+        'user_id',
+        'country_id',
+        'state_id',
+        'area_id'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -112,5 +115,17 @@ class Address extends Model implements Castable
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function country()
+    {
+      return $this->hasOne('App\Models\Country', 'id', 'country_id');
+    }
+    public function state()
+    {
+      return $this->hasOne('App\Models\State', 'id', 'state_id');
+    }
+    public function area()
+    {
+      return $this->hasOne('App\Models\Area', 'id', 'area_id');
     }
 }

@@ -13,6 +13,36 @@
         </div>
     </div>
 
+    <div class="form-group row">
+        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('country_id',
+            $countries
+            ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('state_id',
+           isset($user->state)?[$user->state_id=>$user->state->name]:[]
+            ,null, ['class' => 'select-state form-control','id'=>'change-state']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_state_help") }}</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        {!! Form::label('area_id', trans('lang.app_area'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('area_id',
+            isset($user->area)?[$user->area_id=>$user->area->name]:[]
+            ,null, ['class' => 'select-area form-control','id'=>'change-area']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_area_help") }}</div>
+        </div>
+    </div>
+
     <!-- Email Field -->
     <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
         {!! Form::label('email', trans("lang.user_email"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
@@ -131,3 +161,57 @@
         <i class="fas fa-save"></i> {{trans('lang.save')}} {{trans('lang.user')}}</button>
     <a href="{!! route('users.index') !!}" class="btn btn-default"><i class="fas fa-undo"></i> {{trans('lang.cancel')}}</a>
 </div>
+
+@push('scripts_lib')
+    <script>
+        $(document).ready(function() {
+            $('.select-country').select2({
+                placeholder: "Select country",
+            });
+
+            $('.select-state').select2({
+                placeholder: "Select state",
+            });
+
+            $('.select-area').select2({
+                placeholder: "Select Area",
+            });
+            $('#change-country').change(function() {
+                var id = $(this).val();
+                $.get("{{ route('get-states-ajax') }}?country_id=" + id, function(data) {
+                    $('select[name ="state_id"]').empty();
+                    $('select[name ="state_id"]').append(
+                        '<option value=""></option>');
+                    for (let index = 0; index < data.length; index++) {
+                        const element = data[index];
+
+                        $('select[name ="state_id"]').append('<option value="' +
+                            element['id'] + '">' + element['name'] + '</option>');
+                    }
+
+
+                });
+            });
+            $('#change-state').change(function() {
+                var id = $(this).val();
+
+                $.get("{{ route('get-areas-ajax') }}?state_id=" + id, function(data) {
+                    $('select[name ="area_id"]').empty();
+                    $('select[name ="area_id"]').append(
+                        '<option value=""></option>');
+                    for (let index = 0; index < data.length; index++) {
+                        const element = data[index];
+                        $('select[name ="area_id"]').append('<option value="' +
+                            element['id'] + '">' + element['name'] + '</option>');
+                    }
+
+
+                });
+            });
+            @if(!isset($user))
+                $('.select-country').trigger('change');
+                $('.select-state').trigger('change');                    
+            @endif
+        });
+    </script>
+@endpush

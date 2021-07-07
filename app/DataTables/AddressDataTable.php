@@ -35,6 +35,15 @@ class AddressDataTable extends DataTable
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
+            ->editColumn('country', function ($area) {
+                return $area['country']['name'];
+            })
+            ->editColumn('state', function ($area) {
+                return $area['state']['name'];
+            })
+            ->editColumn('area', function ($area) {
+                return $area['area']['name'];
+            })
             ->editColumn('updated_at', function ($address) {
                 return getDateColumn($address, 'updated_at');
             })
@@ -61,6 +70,21 @@ class AddressDataTable extends DataTable
                 'data' => 'address',
                 'title' => trans('lang.address_address'),
 
+            ],
+            [
+                'data' => 'area',
+                'title' => trans('lang.area'),
+                'searchable' => false,
+            ],
+            [
+                'data' => 'state',
+                'title' => trans('lang.state'),
+                'searchable' => false,
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
+                'searchable' => false,
             ],
             (auth()->check() && auth()->user()->hasRole('admin')) ?
                 [

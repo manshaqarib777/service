@@ -26,6 +26,35 @@
 
 </div>
 <div class="d-flex flex-column col-sm-12 col-md-6">
+    <div class="form-group row">
+        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('country_id',
+            $countries
+            ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+        </div>
+    </div>
+    <div class="form-group row">
+        {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('state_id',
+            isset($address->state)?[$address->state_id=>$address->state->name]:[]
+            ,null, ['class' => 'select-state form-control','id'=>'change-state']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_state_help") }}</div>
+        </div>
+    </div>
+    <div class="form-group row">
+        {!! Form::label('area_id', trans('lang.app_area'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('area_id',
+            isset($address->area)?[$address->area_id=>$address->area->name]:[]
+            ,null, ['class' => 'select-area form-control','id'=>'change-area']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_area_help") }}</div>
+        </div>
+    </div>
+</div>
+<div class="d-flex flex-column col-sm-12 col-md-6">
 
     <!-- Latitude Field -->
     <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
@@ -73,3 +102,57 @@
         <i class="fa fa-save"></i> {{trans('lang.save')}} {{trans('lang.address')}}</button>
     <a href="{!! route('addresses.index') !!}" class="btn btn-default"><i class="fa fa-undo"></i> {{trans('lang.cancel')}}</a>
 </div>
+@push('scripts_lib')
+    <script>
+        $(document).ready(function() {
+            $('.select-country').select2({
+                placeholder: "Search country",
+            });
+            $('.select-state').select2({
+                placeholder: "Search state",
+            });
+            $('.select-areea').select2({
+                placeholder: "Search Area",
+            });
+
+
+
+            $('#change-country').change(function() {
+                var id = $(this).val();
+                $.get("{{ route('get-states-ajax') }}?country_id=" + id, function(data) {
+                    $('select[name ="state_id"]').empty();
+                    $('select[name ="state_id"]').append(
+                        '<option value=""></option>');
+                    for (let index = 0; index < data.length; index++) {
+                        const element = data[index];
+
+                        $('select[name ="state_id"]').append('<option value="' +
+                            element['id'] + '">' + element['name'] + '</option>');
+                    }
+
+
+                });
+            });
+            $('#change-state').change(function() {
+                var id = $(this).val();
+                $.get("{{ route('get-areas-ajax') }}?state_id=" + id, function(data) {
+                    $('select[name ="area_id"]').empty();
+                    $('select[name ="area_id"]').append(
+                        '<option value=""></option>');
+                    for (let index = 0; index < data.length; index++) {
+                        const element = data[index];
+
+                        $('select[name ="area_id"]').append('<option value="' +
+                            element['id'] + '">' + element['name'] + '</option>');
+                    }
+
+
+                });
+            });
+            @if(!isset($address))
+            $('.select-country').trigger('change');
+            $('.select-state').trigger('change');
+            @endif
+        });
+    </script>
+@endpush

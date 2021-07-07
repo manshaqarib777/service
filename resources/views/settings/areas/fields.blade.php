@@ -8,16 +8,16 @@
             ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
             <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
         </div>
-      </div>
-      <div class="form-group row">
-          {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
-          <div class="col-9">
-              {!! Form::select('state_id',
-              isset($area->state)?[$area->state_id=>$area->state->name]:[]
-              ,null, ['class' => 'select-state form-control','id'=>'change-state']) !!}
-              <div class="form-text text-muted">{{ trans("lang.app_setting_default_state_help") }}</div>
-          </div>
-      </div>
+    </div>
+    <div class="form-group row">
+        {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('state_id',
+            isset($area->state)?[$area->state_id=>$area->state->name]:[]
+            ,null, ['class' => 'select-state form-control','id'=>'change-state']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_default_state_help") }}</div>
+        </div>
+    </div>
     <div class="form-group row ">
         {!! Form::label('name', trans('lang.area_name'), ['class' => 'col-3 control-label text-right']) !!}
         <div class="col-9">
@@ -37,10 +37,10 @@
     <script>
         $(document).ready(function() {
             $('.select-country').select2({
-                placeholder: "Select country",
+                placeholder: "Search country",
             });
             $('.select-state').select2({
-                placeholder: "Select state",
+                placeholder: "Search state",
             });
 
 

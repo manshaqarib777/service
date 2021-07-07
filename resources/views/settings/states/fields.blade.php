@@ -30,7 +30,7 @@
     <script>
         $(document).ready(function() {
             $('.select-country').select2({
-                placeholder: "Select country",
+                placeholder: "Search country",
             });
 
         });
