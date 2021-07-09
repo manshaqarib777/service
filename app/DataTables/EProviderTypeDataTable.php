@@ -33,11 +33,18 @@ class EProviderTypeDataTable extends DataTable
      */
     public function dataTable($query)
     {
+        if (auth()->user()->hasRole('client'))
+            $query = $query->where('user_id', auth()->id());
+        if (auth()->user()->hasRole('branch'))
+            $query = $query->where('country_id', get_role_country_id('branch'));
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
             ->editColumn('name', function ($eProviderType) {
                 return $eProviderType->name;
+            })
+            ->editColumn('country', function ($eProviderType) {
+                return $eProviderType['country']['name'];
             })
             ->editColumn('updated_at', function ($eProviderType) {
                 return getDateColumn($eProviderType, 'updated_at');
@@ -62,6 +69,11 @@ class EProviderTypeDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.e_provider_type_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

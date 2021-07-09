@@ -44,6 +44,9 @@ class RequestedEProviderDataTable extends DataTable
                 }
                 return $eProvider->name;
             })
+            ->editColumn('country', function ($eProvider) {
+                return $eProvider['eProviderType']['country']['name'];
+            })
             ->editColumn('e_provider_type.name', function ($eProvider) {
                 return getLinksColumnByRouteName([$eProvider->eProviderType], "eProviderTypes.edit", 'id', 'name');
             })
@@ -82,6 +85,11 @@ class RequestedEProviderDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.e_provider_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

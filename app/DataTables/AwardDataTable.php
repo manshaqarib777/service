@@ -39,6 +39,9 @@ class AwardDataTable extends DataTable
             ->editColumn('updated_at', function ($award) {
                 return getDateColumn($award, 'updated_at');
             })
+            ->editColumn('country', function ($eProvider) {
+                return $eProvider['eProvider']['eProviderType']['country']['name'];
+            })
             ->editColumn('title', function ($award) {
                 return $award->title;
             })
@@ -65,6 +68,11 @@ class AwardDataTable extends DataTable
             [
                 'data' => 'title',
                 'title' => trans('lang.award_title'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

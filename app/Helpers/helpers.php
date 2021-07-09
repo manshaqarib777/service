@@ -31,6 +31,10 @@ function formatedSize($bytes, $precision = 1)
 
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
+function get_role_country_id($role_name)
+{
+    return auth()->user()->country_id;
+}
 
 function getMediaColumn($mediaModel, $mediaCollectionName = '', $optionClass = '', $mediaThumbnail = 'icon')
 {

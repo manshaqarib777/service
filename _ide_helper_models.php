@@ -801,6 +801,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $country_id
+ * @property-read \App\Models\Country|null $country
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomFieldValue[] $customFieldsValues
  * @property-read int|null $custom_fields_values_count
  * @property-read mixed $custom_fields
@@ -1322,6 +1323,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $country_id
+ * @property-read \App\Models\Country|null $country
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustomFieldValue[] $customFieldsValues
  * @property-read int|null $custom_fields_values_count
  * @property-read mixed $custom_fields

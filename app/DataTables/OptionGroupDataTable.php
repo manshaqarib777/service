@@ -32,11 +32,18 @@ class OptionGroupDataTable extends DataTable
      */
     public function dataTable($query)
     {
+        if (auth()->user()->hasRole('client'))
+            $query = $query->where('user_id', auth()->id());
+        if (auth()->user()->hasRole('branch'))
+            $query = $query->where('country_id', get_role_country_id('branch'));
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
             ->editColumn('name', function ($optionGroup) {
                 return $optionGroup->name;
+            })
+            ->editColumn('country', function ($optionGroup) {
+                return $optionGroup['country']['name'];
             })
             ->editColumn('updated_at', function ($optionGroup) {
                 return getDateColumn($optionGroup, 'updated_at');
@@ -61,6 +68,11 @@ class OptionGroupDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.option_group_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

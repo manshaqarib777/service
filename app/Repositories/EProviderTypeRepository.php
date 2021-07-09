@@ -28,7 +28,9 @@ class EProviderTypeRepository extends BaseRepository
     protected $fieldSearchable = [
         'name',
         'commission',
-        'disabled'
+        'disabled',
+        'country_id'
+
     ];
 
     /**

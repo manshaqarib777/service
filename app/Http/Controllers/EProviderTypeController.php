@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class EProviderTypeController extends Controller
 {
     /** @var  EProviderTypeRepository */
@@ -30,12 +30,14 @@ class EProviderTypeController extends Controller
      */
     private $customFieldRepository;
 
+    private $countryRepository;
 
-    public function __construct(EProviderTypeRepository $eProviderTypeRepo, CustomFieldRepository $customFieldRepo)
+    public function __construct(EProviderTypeRepository $eProviderTypeRepo, CustomFieldRepository $customFieldRepo,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->eProviderTypeRepository = $eProviderTypeRepo;
         $this->customFieldRepository = $customFieldRepo;
+        $this->countryRepository = $countryRepository;
 
     }
 
@@ -64,7 +66,9 @@ class EProviderTypeController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->eProviderTypeRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('e_provider_types.create')->with("customFields", isset($html) ? $html : false);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+
+        return view('e_provider_types.create')->with("customFields", isset($html) ? $html : false)->with('countries',$countries);
     }
 
     /**
@@ -134,8 +138,9 @@ class EProviderTypeController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
-        return view('e_provider_types.edit')->with('eProviderType', $eProviderType)->with("customFields", isset($html) ? $html : false);
+        return view('e_provider_types.edit')->with('eProviderType', $eProviderType)->with('countries',$countries)->with("customFields", isset($html) ? $html : false);
     }
 
     /**
