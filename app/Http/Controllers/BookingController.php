@@ -122,7 +122,6 @@ class BookingController extends Controller
     {
         return $bookingDataTable->render('bookings.index');
     }
-
     /**
      * Display the specified Booking.
      *

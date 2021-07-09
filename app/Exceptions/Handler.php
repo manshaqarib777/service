@@ -7,7 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Symfony\Component\HttpKernel\Exception\HttpException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -71,7 +71,18 @@ class Handler extends ExceptionHandler
                 return response()->json(['error' => $exception->getMessage()], 401);
             }
         }
+        if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
+            
+            return redirect()->back();
+ 
+        }
+        if (!$this->isHttpException($exception))
+        {
+            return redirect()->back();
+
+        } 
 
         return parent::render($request, $exception);
     }
+
 }

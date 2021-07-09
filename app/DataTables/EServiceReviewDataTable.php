@@ -38,6 +38,9 @@ class EServiceReviewDataTable extends DataTable
             ->editColumn('updated_at', function ($eServiceReview) {
                 return getDateColumn($eServiceReview, 'updated_at');
             })
+            ->editColumn('country', function ($eProvider) {
+                return $eProvider['eService']['eProvider']['eProviderType']['country']['name'];
+            })
             ->editColumn('user.name', function ($eServiceReview) {
                 return getLinksColumnByRouteName([$eServiceReview->user], 'users.edit', 'id', 'name');
             })
@@ -61,6 +64,11 @@ class EServiceReviewDataTable extends DataTable
             [
                 'data' => 'review',
                 'title' => trans('lang.e_service_review_review'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

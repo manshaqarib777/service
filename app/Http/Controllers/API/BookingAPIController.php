@@ -189,6 +189,7 @@ class BookingAPIController extends Controller
             $eProvider = $eService->eProvider;
             $taxes = $eProvider->taxes;
             $input['e_provider'] = $eProvider;
+            $input['e_provider_id'] = $eService->eProvider->id;
             $input['taxes'] = $taxes;
             $input['e_service'] = $eService;
             if (isset($input['options'])) {

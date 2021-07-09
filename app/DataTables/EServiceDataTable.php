@@ -45,6 +45,9 @@ class EServiceDataTable extends DataTable
                 }
                 return $eService['name'];
             })
+            ->editColumn('country', function ($eProvider) {
+                return $eProvider['eProvider']['eProviderType']['country']['name'];
+            })
             ->editColumn('price', function ($eService) {
                 if ($eService['price_unit'] == 'fixed' && !empty($eService['quantity_unit'])) {
                     return getPriceColumn($eService) . " - " . $eService['quantity_unit'];
@@ -97,6 +100,11 @@ class EServiceDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.e_service_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

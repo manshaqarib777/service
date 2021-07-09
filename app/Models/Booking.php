@@ -72,7 +72,9 @@ class Booking extends Model
         'start_at',
         'ends_at',
         'hint',
-        'cancel'
+        'cancel',
+        'e_provider_id'
+
     ];
     /**
      * The attributes that should be casted to native types.
@@ -222,6 +224,10 @@ class Booking extends Model
             $hours = 0;
         }
         return $hours;
+    }
+    public function eProvider()
+    {
+        return $this->belongsTo(EProvider::class, 'e_provider_id', 'id');
     }
 
 }
