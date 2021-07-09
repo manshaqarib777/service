@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Prettus\Validator\Exceptions\ValidatorException;
+use App\Models\Country;
+
 
 class UserAPIController extends Controller
 {
@@ -226,5 +228,15 @@ class UserAPIController extends Controller
             return $this->sendError('Reset link not sent', 200);
         }
 
+    }
+    function countries(Request $request)
+    {
+        $countries = Country::with('currency','states.areas')->where('active',1)->get();
+
+        if (!$countries) {
+            return $this->sendError('User not found', 401);
+        }
+
+        return $this->sendResponse($countries, 'Countries retrieved successfully');
     }
 }
