@@ -39,7 +39,10 @@ class PaymentDataTable extends DataTable
             ->editColumn('updated_at', function ($payment) {
                 return getDateColumn($payment, 'updated_at');
             })->editColumn('amount', function ($payment) {
-                return getPriceColumn($payment, 'amount');
+                return getPriceColumn($payment, 'amount',$payment->user->country_id);
+            })
+            ->editColumn('country', function ($payment) {
+                return $payment['user']['country']['name'];
             })
             ->editColumn('payment_method.name', function ($payment) {
                 return $payment->paymentMethod->name;
@@ -72,6 +75,11 @@ class PaymentDataTable extends DataTable
             [
                 'data' => 'description',
                 'title' => trans('lang.payment_description'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             (auth()->check() && auth()->user()->hasAnyRole(['admin', 'provider'])) ? [

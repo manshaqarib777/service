@@ -9,6 +9,8 @@ use App\Models\State;
 use App\Models\Area;
 use App\Models\Country;
 use App\Models\Currency;
+use Illuminate\Support\Facades\Artisan;
+use Laracasts\Flash\Flash;
 class HomeController extends Controller
 {
     /**
@@ -49,17 +51,20 @@ class HomeController extends Controller
         $request->session()->put('country', $request->country);
 
         $country = Country::where('code', $request->country)->get()->first();
-        //dd($request->country);
+        //dd($country);
 
         $currency = Currency::where('code', $country->currency->code)->first();
         if (!$currency) {
             $currency = Currency::get()->first();
             $request->session()->put('currency_code', $currency->code);
-            flash('Currency changed to '. $currency->name)->success();
-            return $this->sendResponse($currency, __('lang.saved_successfully', ['operator' => __('lang.country')]));
+            Flash::success(__('lang.updated_successfully', ['operator' => __('lang.country')]));
+            Artisan::call("config:clear");
         } else {
             $request->session()->put('currency_code', $currency->code);
-            return $this->sendResponse($currency, __('lang.saved_successfully', ['operator' => __('lang.country')]));
+            Flash::success(__('lang.updated_successfully', ['operator' => __('lang.country')]));
+            Artisan::call("config:clear");
         }
+        return redirect()->back();
+
     }
 }

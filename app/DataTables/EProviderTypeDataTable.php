@@ -43,9 +43,6 @@ class EProviderTypeDataTable extends DataTable
             ->editColumn('name', function ($eProviderType) {
                 return $eProviderType->name;
             })
-            ->editColumn('country', function ($eProviderType) {
-                return $eProviderType['country']['name'];
-            })
             ->editColumn('updated_at', function ($eProviderType) {
                 return getDateColumn($eProviderType, 'updated_at');
             })
@@ -69,11 +66,6 @@ class EProviderTypeDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.e_provider_type_name'),
-
-            ],
-            [
-                'data' => 'country',
-                'title' => trans('lang.country'),
 
             ],
             [

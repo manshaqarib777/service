@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
+use App\Repositories\CountryRepository;
 
 class EServiceController extends Controller
 {
@@ -53,10 +54,12 @@ class EServiceController extends Controller
      * @var EProviderRepository
      */
     private $eProviderRepository;
+    private $countryRepository;
 
     public function __construct(EServiceRepository $eServiceRepo, CustomFieldRepository $customFieldRepo, UploadRepository $uploadRepo
         , CategoryRepository $categoryRepo
-        , EProviderRepository $eProviderRepo)
+        , EProviderRepository $eProviderRepo
+        ,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->eServiceRepository = $eServiceRepo;
@@ -64,6 +67,8 @@ class EServiceController extends Controller
         $this->uploadRepository = $uploadRepo;
         $this->categoryRepository = $categoryRepo;
         $this->eProviderRepository = $eProviderRepo;
+        $this->countryRepository = $countryRepository;
+
     }
 
     /**
@@ -92,7 +97,8 @@ class EServiceController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->eServiceRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('e_services.create')->with("customFields", isset($html) ? $html : false)->with("category", $category)->with("categoriesSelected", $categoriesSelected)->with("eProvider", $eProvider);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('e_services.create')->with("customFields", isset($html) ? $html : false)->with("category", $category)->with("categoriesSelected", $categoriesSelected)->with("eProvider", $eProvider)->with('countries',$countries);
     }
 
     /**
@@ -174,8 +180,8 @@ class EServiceController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
-
-        return view('e_services.edit')->with('eService', $eService)->with("customFields", isset($html) ? $html : false)->with("category", $category)->with("categoriesSelected", $categoriesSelected)->with("eProvider", $eProvider);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('e_services.edit')->with('eService', $eService)->with("customFields", isset($html) ? $html : false)->with("category", $category)->with("categoriesSelected", $categoriesSelected)->with("eProvider", $eProvider)->with('countries',$countries);
     }
 
     /**

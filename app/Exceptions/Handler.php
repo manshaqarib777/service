@@ -76,11 +76,11 @@ class Handler extends ExceptionHandler
             return redirect()->back();
  
         }
-        if (!$this->isHttpException($exception))
-        {
-            return redirect()->route('login');
+        // if (!$this->isHttpException($exception))
+        // {
+        //     return redirect()->route('login');
 
-        } 
+        // } 
 
         return parent::render($request, $exception);
     }

@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class EProviderController extends Controller
 {
     /** @var  EProviderRepository */
@@ -61,6 +61,7 @@ class EProviderController extends Controller
     /**
      * @var AddressRepository
      */
+    private $countryRepository;
     private $addressRepository;
     /**
      * @var TaxRepository
@@ -71,7 +72,8 @@ class EProviderController extends Controller
         , EProviderTypeRepository $eProviderTypeRepo
         , UserRepository $userRepo
         , AddressRepository $addressRepo
-        , TaxRepository $taxRepo)
+        , TaxRepository $taxRepo
+        ,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->eProviderRepository = $eProviderRepo;
@@ -81,6 +83,8 @@ class EProviderController extends Controller
         $this->userRepository = $userRepo;
         $this->addressRepository = $addressRepo;
         $this->taxRepository = $taxRepo;
+        $this->countryRepository = $countryRepository;
+        
     }
 
     /**
@@ -124,7 +128,8 @@ class EProviderController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->eProviderRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('e_providers.create')->with("customFields", isset($html) ? $html : false)->with("eProviderType", $eProviderType)->with("user", $user)->with("usersSelected", $usersSelected)->with("address", $address)->with("addressesSelected", $addressesSelected)->with("tax", $tax)->with("taxesSelected", $taxesSelected);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('e_providers.create')->with("customFields", isset($html) ? $html : false)->with("eProviderType", $eProviderType)->with("user", $user)->with('countries',$countries)->with("usersSelected", $usersSelected)->with("address", $address)->with("addressesSelected", $addressesSelected)->with("tax", $tax)->with("taxesSelected", $taxesSelected);
     }
 
     /**
@@ -213,8 +218,8 @@ class EProviderController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
-
-        return view('e_providers.edit')->with('eProvider', $eProvider)->with("customFields", isset($html) ? $html : false)->with("eProviderType", $eProviderType)->with("user", $user)->with("usersSelected", $usersSelected)->with("address", $address)->with("addressesSelected", $addressesSelected)->with("tax", $tax)->with("taxesSelected", $taxesSelected);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('e_providers.edit')->with('eProvider', $eProvider)->with("customFields", isset($html) ? $html : false)->with("eProviderType", $eProviderType)->with("user", $user)->with("usersSelected", $usersSelected)->with("address", $address)->with("addressesSelected", $addressesSelected)->with("tax", $tax)->with("taxesSelected", $taxesSelected)->with('countries',$countries);
     }
 
     /**

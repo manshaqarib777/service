@@ -12,15 +12,6 @@
             </div>
         </div>
     </div>
-    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
-        <div class="col-9">
-            {!! Form::select('country_id',
-            $countries
-            ,null, ['class' => 'select2 form-control']) !!}
-            <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
-        </div>
-      </div>
 
     <!-- Commission Field -->
     <div class="form-group align-items-baseline d-flex flex-column flex-md-row">

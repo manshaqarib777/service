@@ -59,6 +59,31 @@
                     {!! Form::close() !!}
                 </div>
             </li>
+            @php
+                if (Session::has('country')) {
+                    $country = Session::get('country', null);
+                    $country = \App\Models\Country::where('code', $country)
+                        ->get()
+                        ->first();
+                    $country = $country->name;
+                } else {
+                    $country = null;
+                }
+            @endphp
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#"> <i class="fa fas fa-angle-down"></i> {!! Str::upper( ($country ? $country : 'Select Country')) !!}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    {!! Form::open(['url' => ['country/change'], 'method' => 'post','id'=>'countries-form']) !!}
+                    {!!  Form::hidden('country',Session::get('country', null),['id'=>'current-country'])!!}
+                    @foreach ($app_countries as $key => $value)
+                        <a href="#" class="dropdown-item @if(Session::get('country', null) == $value->code) active @endif" onclick="changeCountry('{{$value->code}}')">
+                            <i class="fas fa-circle mr-2"></i> {!! __($value->name) !!}
+                        </a>
+                    @endforeach
+                    {!! Form::close() !!}
+                </div>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <img src="{{auth()->user()->getFirstMediaUrl('avatar','icon')}}" class="brand-image mx-2 img-circle elevation-2" alt="User Image">
@@ -168,6 +193,11 @@
         event.preventDefault();
         document.getElementById('current-language').value = code;
         document.getElementById('languages-form').submit();
+    }
+    function changeCountry(code) {
+        event.preventDefault();
+        document.getElementById('current-country').value = code;
+        document.getElementById('countries-form').submit();
     }
 </script>
 

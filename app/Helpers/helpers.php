@@ -13,7 +13,7 @@ use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 use InfyOm\Generator\Utils\HTMLFieldGenerator;
 use Symfony\Component\ErrorHandler\Error\FatalError;
-
+use App\Models\Country;
 /**
  * @param $bytes
  * @param int $precision
@@ -68,26 +68,55 @@ function getDateColumn($modelObject, $attributeName = 'updated_at')
     return $replace;
 }
 
-function getPriceColumn($modelObject, $attributeName = 'price')
+function getPriceColumn($modelObject, $attributeName = 'price',$country_id=null)
 {
 
-    if ($modelObject[$attributeName] != null && strlen($modelObject[$attributeName]) > 0) {
-        $modelObject[$attributeName] = number_format((float)$modelObject[$attributeName], 2, '.', '');
-        if (setting('currency_right', false) != false) {
-            return $modelObject[$attributeName] . "<span>" . setting('default_currency') . "</span>";
-        } else {
-            return "<span>" . setting('default_currency') . "</span>" . $modelObject[$attributeName];
+    $country=Country::with('currency')->find($country_id);
+    if(isset($country))
+    {
+        if ($modelObject[$attributeName] != null && strlen($modelObject[$attributeName]) > 0) {
+            $modelObject[$attributeName] = number_format((float)$modelObject[$attributeName], 2, '.', '');
+            if ($country->currency->currency_right != false) {
+                return $modelObject[$attributeName] . "<span>" . $country->currency->symbol . "</span>";
+            } else {
+                return "<span>" . $country->currency->symbol . "</span>" . $modelObject[$attributeName];
+            }
+        }
+
+    }
+    else
+    {
+        if ($modelObject[$attributeName] != null && strlen($modelObject[$attributeName]) > 0) {
+            $modelObject[$attributeName] = number_format((float)$modelObject[$attributeName], 2, '.', '');
+            if (setting('currency_right', false) != false) {
+                return $modelObject[$attributeName] . "<span>" . setting('default_currency') . "</span>";
+            } else {
+                return "<span>" . setting('default_currency') . "</span>" . $modelObject[$attributeName];
+            }
         }
     }
+
     return '-';
 }
 
-function getPrice($price = 0)
+function getPrice($price = 0,$country_id=null)
 {
-    if (setting('currency_right', false) != false) {
-        return number_format((float)$price, 2, '.', '') . "<span>" . setting('default_currency') . "</span>";
-    } else {
-        return "<span>" . setting('default_currency') . "</span>" . number_format((float)$price, 2, '.', ' ');
+    $country=Country::with('currency')->find($country_id);
+    if(isset($country))
+    {
+        if ($country->currency->currency_right != false) {
+            return number_format((float)$price, 2, '.', '') . "<span>" . $country->currency->symbol . "</span>";
+        } else {
+            return "<span>" . $country->currency->symbol . "</span>" . number_format((float)$price, 2, '.', ' ');
+        }
+    }
+    else
+    {
+        if (setting('currency_right', false) != false) {
+            return number_format((float)$price, 2, '.', '') . "<span>" . setting('default_currency') . "</span>";
+        } else {
+            return "<span>" . setting('default_currency') . "</span>" . number_format((float)$price, 2, '.', ' ');
+        }
     }
 }
 

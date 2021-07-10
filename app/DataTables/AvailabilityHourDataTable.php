@@ -40,7 +40,7 @@ class AvailabilityHourDataTable extends DataTable
                 return translateDay($availabilityHour['day']);
             })
             ->editColumn('country', function ($eProvider) {
-                return $eProvider['eProvider']['eProviderType']['country']['name'];
+                return $eProvider['eProvider']['country']['name'];
             })
             ->editColumn('data', function ($availabilityHour) {
                 return getStripedHtmlColumn($availabilityHour, 'data');

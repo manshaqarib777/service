@@ -85,12 +85,12 @@
                             </div>
                             <div class="text-bold ml-xl-auto my-1 my-xl-0">
                                 @if($booking->e_service->hasDiscount())
-                                    <del class="text-gray">{!! getPrice($booking->e_service->price) !!}</del>
+                                    <del class="text-gray">{!! getPrice($booking->e_service->price,'price',$booking->e_service->country_id) !!}</del>
                                 @endif
                                 @if($booking->e_service->price_unit == 'fixed' && !empty($booking->e_service->quantity_unit))
-                                    <span class="h5 text-bold">{!! getPrice($booking->e_service->getPrice()) !!} / {{ $booking->e_service->quantity_unit }}</span>
+                                    <span class="h5 text-bold">{!! getPrice($booking->e_service->getPrice(),'price',$booking->eService->country_id) !!} / {{ $booking->e_service->quantity_unit }}</span>
                                 @else
-                                    <span class="h5 text-bold">{!! getPrice($booking->e_service->getPrice()) !!} / {{__('lang.e_service_price_unit_'.$booking->e_service->price_unit)}}</span>
+                                    <span class="h5 text-bold">{!! getPrice($booking->e_service->getPrice(),'price',$booking->eService->country_id) !!} / {{__('lang.e_service_price_unit_'.$booking->e_service->price_unit)}}</span>
                                 @endif
                             </div>
                         </li>
@@ -101,7 +101,7 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 {!! getMediaColumn($option,'image','rounded shadow-sm border') !!}
                                 <span class="mx-3"><b>{{$option->name}}</b><small class="mx-3"> {{getStripedHtmlColumn($option,'description')}}</small></span>
-                                <h6 class="text-bold ml-xl-auto my-1 my-xl-0">{!! getPriceColumn($option) !!}</h6>
+                                <h6 class="text-bold ml-xl-auto my-1 my-xl-0">{!! getPriceColumn($option,'price',$option->e_service->country_id) !!}</h6>
                             </li>
                         @endforeach
                     </ul>
@@ -135,7 +135,7 @@
                                         @if($tax->type == 'percent')
                                             {{$tax->value .'%'}}
                                         @else
-                                            {!! getPriceColumn($tax,'value') !!}
+                                            {!! getPriceColumn($tax,'value',$tax->country_id) !!}
                                         @endif
                                     </h6>
                                 </li>
@@ -149,15 +149,15 @@
                                     @if($booking->coupon->discount_type == 'percent')
                                         {{(-$booking->coupon->discount) .'%'}}
                                     @else
-                                        {!! getPrice(-$booking->coupon->discount) !!}
+                                        {!! getPrice(-$booking->coupon->discount,'price',$booking->coupon->country_id) !!}
                                     @endif
                                 </h6>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <b>{{__('lang.booking_subtotal')}}</b> <h6 class="text-bold">{!! getPrice($booking->getSubtotal()) !!}</h6>
+                                <b>{{__('lang.booking_subtotal')}}</b> <h6 class="text-bold">{!! getPrice($booking->getSubtotal(),'price',$booking->eService->country_id) !!}</h6>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <b>{{__('lang.booking_total')}}</b> <h5 class="text-bold">{!! getPrice($booking->getTotal()) !!}</h5>
+                                <b>{{__('lang.booking_total')}}</b> <h5 class="text-bold">{!! getPrice($booking->getTotal(),'price',$booking->eService->country_id) !!}</h5>
                             </li>
                         </ul>
                     </div>

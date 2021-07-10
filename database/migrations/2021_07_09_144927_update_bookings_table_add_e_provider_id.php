@@ -14,7 +14,7 @@ class UpdateBookingsTableAddEProviderId extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->integer('e_provider_id')->unsigned()->nullable();
+            $table->integer('e_service_id')->unsigned()->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class UpdateBookingsTableAddEProviderId extends Migration
     public function down()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->dropColumn('e_provider_id');
+            $table->dropColumn('e_service_id');
         });
     }
 }

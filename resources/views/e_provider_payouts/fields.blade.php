@@ -37,7 +37,7 @@
         {!! Form::label('amount', trans("lang.e_provider_payout_amount"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
         <div class="col-md-9">
             {{Form::hidden('amount', $amount)}}
-            {!! getPrice($amount)  !!}
+            {!! getPrice($amount,'price',$eProvider->country_id)  !!}
         </div>
     </div>
 

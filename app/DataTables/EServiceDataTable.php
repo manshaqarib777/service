@@ -46,13 +46,13 @@ class EServiceDataTable extends DataTable
                 return $eService['name'];
             })
             ->editColumn('country', function ($eProvider) {
-                return $eProvider['eProvider']['eProviderType']['country']['name'];
+                return $eProvider['country']['name'];
             })
             ->editColumn('price', function ($eService) {
                 if ($eService['price_unit'] == 'fixed' && !empty($eService['quantity_unit'])) {
-                    return getPriceColumn($eService) . " - " . $eService['quantity_unit'];
+                    return getPriceColumn($eService,'price',$eService['country']['id']) . " - " . $eService['quantity_unit'];
                 } else {
-                    return getPriceColumn($eService) . " - " . __('lang.e_service_price_unit_' . $eService['price_unit']);
+                    return getPriceColumn($eService,'price',$eService['country']['id']) . " - " . __('lang.e_service_price_unit_' . $eService['price_unit']);
                 }
             })
             ->editColumn('discount_price', function ($eService) {
@@ -60,9 +60,9 @@ class EServiceDataTable extends DataTable
                     return '-';
                 } else {
                     if ($eService['price_unit'] == 'fixed' && !empty($eService['quantity_unit'])) {
-                        return getPriceColumn($eService, 'discount_price') . " - " . $eService['quantity_unit'];
+                        return getPriceColumn($eService, 'discount_price',$eService['country']['id']) . " - " . $eService['quantity_unit'];
                     } else {
-                        return getPriceColumn($eService, 'discount_price') . " - " . __('lang.e_service_price_unit_' . $eService['price_unit']);
+                        return getPriceColumn($eService, 'discount_price',$eService['country']['id']) . " - " . __('lang.e_service_price_unit_' . $eService['price_unit']);
                     }
                 }
             })

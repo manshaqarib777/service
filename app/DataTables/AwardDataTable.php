@@ -40,7 +40,7 @@ class AwardDataTable extends DataTable
                 return getDateColumn($award, 'updated_at');
             })
             ->editColumn('country', function ($eProvider) {
-                return $eProvider['eProvider']['eProviderType']['country']['name'];
+                return $eProvider['eProvider']['country']['name'];
             })
             ->editColumn('title', function ($award) {
                 return $award->title;

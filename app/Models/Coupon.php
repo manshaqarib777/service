@@ -54,7 +54,8 @@ class Coupon extends Model implements Castable
         'discount_type',
         'description',
         'expires_at',
-        'enabled'
+        'enabled',
+        'country_id'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -109,6 +110,10 @@ class Coupon extends Model implements Castable
     public function discountables()
     {
         return $this->hasMany(Discountable::class, 'coupon_id');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 
 }

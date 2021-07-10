@@ -40,7 +40,7 @@ class BookingDataTable extends DataTable
                 return "#" . $booking->id;
             })
             ->editColumn('country', function ($booking) {
-                return $booking['eProvider']['eProviderType']['country']['name'];
+                return $booking['eService']['country']['name'];
             })
             ->editColumn('booking_at', function ($booking) {
                 return getDateColumn($booking, 'booking_at');
@@ -55,16 +55,16 @@ class BookingDataTable extends DataTable
                 return getLinksColumnByRouteName([$booking->e_provider], 'eProviders.edit', 'id', 'name');
             })
             ->editColumn('total', function ($booking) {
-                return "<span class='text-bold text-success'>" . getPrice($booking->getTotal()) . "</span>";
+                return "<span class='text-bold text-success'>" . getPrice($booking->getTotal(),$booking['eService']['country']['id']) . "</span>";
             })
             ->editColumn('address', function ($booking) {
                 return $booking->address->address;
             })
             ->editColumn('taxes', function ($booking) {
-                return "<span class='text-bold'>" . getPrice($booking->getTaxesValue()) . "</span>";
+                return "<span class='text-bold'>" . getPrice($booking->getTaxesValue(),$booking['eService']['country']['id']) . "</span>";
             })
             ->editColumn('coupon', function ($booking) {
-                return $booking->coupon->code . " <span class='text-bold'>(" . getPrice($booking->getCouponValue()) . ")</span>";
+                return $booking->coupon->code . " <span class='text-bold'>(" . getPrice($booking->getCouponValue(),$booking['eService']['country']['id']) . ")</span>";
             })
             ->editColumn('booking_status.status', function ($booking) {
                 if (isset($booking->bookingStatus))

@@ -3,6 +3,8 @@
 use App\Repositories\UploadRepository;
 use Carbon\Carbon;
 use Closure;
+use App\Models\Country;
+
 
 class App
 {
@@ -37,10 +39,13 @@ class App
             $this->uploadRepository = new UploadRepository(app());
             $upload = $this->uploadRepository->findByField('uuid', setting('app_logo', ''))->first();
             $appLogo = asset('images/logo_default.png');
+            $countries = Country::where('active',1)->get();
             if ($upload && $upload->hasMedia('app_logo')) {
                 $appLogo = $upload->getFirstMediaUrl('app_logo');
             }
             view()->share('app_logo', $appLogo);
+            view()->share('app_countries', $countries);
+            
         } catch (\Exception $exception) { }
 
         return $next($request);

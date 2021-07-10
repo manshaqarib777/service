@@ -42,16 +42,19 @@ class EarningDataTable extends DataTable
                 return getDateColumn($earning);
             })
             ->editColumn('total_earning', function ($earning) {
-                return getPriceColumn($earning, 'total_earning');
+                return getPriceColumn($earning, 'total_earning',$earning['eProvider']['country']['id']);
+            })
+            ->editColumn('country', function ($earning) {
+                return $earning['eProvider']['country']['name'];
             })
             ->editColumn('admin_earning', function ($earning) {
-                return getPriceColumn($earning, 'admin_earning');
+                return getPriceColumn($earning, 'admin_earning',$earning['eProvider']['country']['id']);
             })
             ->editColumn('e_provider_earning', function ($earning) {
-                return getPriceColumn($earning, 'e_provider_earning');
+                return getPriceColumn($earning, 'e_provider_earning',$earning['eProvider']['country']['id']);
             })
             ->editColumn('taxes', function ($earning) {
-                return getPriceColumn($earning, 'taxes');
+                return getPriceColumn($earning, 'taxes',$earning['eProvider']['country']['id']);
             })
             ->addColumn('action', 'earnings.datatables_actions')
             ->rawColumns(array_merge($columns, ['action']));
@@ -71,6 +74,11 @@ class EarningDataTable extends DataTable
                 'data' => 'e_provider.name',
                 'name' => 'eProvider.name',
                 'title' => trans('lang.earning_e_provider_id'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

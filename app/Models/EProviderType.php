@@ -41,7 +41,6 @@ class EProviderType extends Model
         'name',
         'commission',
         'disabled',
-        'country_id'
 
     ];
     /**

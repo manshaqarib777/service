@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class CouponController extends Controller
 {
     /** @var  CouponRepository */
@@ -57,10 +57,10 @@ class CouponController extends Controller
      * @var DiscountableRepository
      */
     private $discountableRepository;
-
+    private $countryRepository;
     public function __construct(CouponRepository $couponRepo, CustomFieldRepository $customFieldRepo, EServiceRepository $eServiceRepo
         , EProviderRepository $eProviderRepo
-        , CategoryRepository $categoryRepo, DiscountableRepository $discountableRepository)
+        , CategoryRepository $categoryRepo, DiscountableRepository $discountableRepository,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->couponRepository = $couponRepo;
@@ -69,6 +69,8 @@ class CouponController extends Controller
         $this->eProviderRepository = $eProviderRepo;
         $this->categoryRepository = $categoryRepo;
         $this->discountableRepository = $discountableRepository;
+        $this->countryRepository = $countryRepository;
+
     }
 
     /**
@@ -108,7 +110,8 @@ class CouponController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->couponRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('coupons.create')->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with("category", $category)->with("eServicesSelected", $eServicesSelected)->with("eProvidersSelected", $eProvidersSelected)->with("categoriesSelected", $categoriesSelected);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('coupons.create')->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with("category", $category)->with("eServicesSelected", $eServicesSelected)->with("eProvidersSelected", $eProvidersSelected)->with("categoriesSelected", $categoriesSelected)->with('countries',$countries);
     }
 
     /**
@@ -220,8 +223,8 @@ class CouponController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
-
-        return view('coupons.edit')->with('coupon', $coupon)->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with("category", $category)->with("eServicesSelected", $eServicesSelected)->with("eProvidersSelected", $eProvidersSelected)->with("categoriesSelected", $categoriesSelected);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('coupons.edit')->with('coupon', $coupon)->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with("category", $category)->with("eServicesSelected", $eServicesSelected)->with("eProvidersSelected", $eProvidersSelected)->with("categoriesSelected", $categoriesSelected)->with('countries',$countries);
     }
 
     /**

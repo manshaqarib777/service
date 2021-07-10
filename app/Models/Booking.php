@@ -73,7 +73,7 @@ class Booking extends Model
         'ends_at',
         'hint',
         'cancel',
-        'e_provider_id'
+        'e_service_id'
 
     ];
     /**
@@ -170,11 +170,14 @@ class Booking extends Model
         $total = $this->getSubtotal();
         $taxValue = 0;
         foreach ($this->taxes as $tax) {
-            if ($tax->type == 'percent') {
-                $taxValue += ($total * $tax->value / 100);
-            } else {
-                $taxValue += $tax->value;
-            }
+            // if($this->eService->country_id==$tax->country_id)
+            // {
+                if ($tax->type == 'percent') {
+                    $taxValue += ($total * $tax->value / 100);
+                } else {
+                    $taxValue += $tax->value;
+                }
+            //}
         }
         return $taxValue;
     }
@@ -185,11 +188,14 @@ class Booking extends Model
         if (empty($this->coupon)) {
             return 0;
         } else {
-            if ($this->coupon->discount_type == 'percent') {
-                return -($total * $this->coupon->discount / 100);
-            } else {
-                return -$this->coupon->discount;
-            }
+            // if($this->eService->country_id==$this->coupon->country_id)
+            // {
+                if ($this->coupon->discount_type == 'percent') {
+                    return -($total * $this->coupon->discount / 100);
+                } else {
+                    return -$this->coupon->discount;
+                }
+            //}
         }
     }
 
@@ -225,9 +231,9 @@ class Booking extends Model
         }
         return $hours;
     }
-    public function eProvider()
+    public function eService()
     {
-        return $this->belongsTo(EProvider::class, 'e_provider_id', 'id');
+        return $this->belongsTo(EService::class, 'e_service_id', 'id');
     }
 
 }

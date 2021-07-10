@@ -41,8 +41,8 @@ class GalleryDataTable extends DataTable
             ->editColumn('description', function ($gallery) {
                 return getStripedHtmlColumn($gallery, 'description');
             })
-            ->editColumn('country', function ($eProvider) {
-                return $eProvider['eProvider']['eProviderType']['country']['name'];
+            ->editColumn('country', function ($gallery) {
+                return $gallery['eProvider']['country']['name'];
             })
             ->editColumn('e_provider.name', function ($gallery) {
                 return getLinksColumnByRouteName([$gallery->eProvider], 'eProviders.edit', 'id', 'name');
