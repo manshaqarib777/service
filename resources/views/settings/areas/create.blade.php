@@ -1,13 +1,14 @@
 @extends('layouts.settings.default')
 @push('css_lib')
-<!-- iCheck -->
-<link rel="stylesheet" href="{{asset('plugins/iCheck/flat/blue.css')}}">
-<!-- select2 -->
-<link rel="stylesheet" href="{{asset('plugins/select2/select2.min.css')}}">
-<!-- bootstrap wysihtml5 - text editor -->
-<link rel="stylesheet" href="{{asset('plugins/summernote/summernote-bs4.css')}}">
-{{--dropzone--}}
-<link rel="stylesheet" href="{{asset('plugins/dropzone/bootstrap.min.css')}}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css')}}">
+    <!-- select2 -->
+    <link rel="stylesheet" href="{{asset('vendor/select2/css/select2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{asset('vendor/summernote/summernote-bs4.min.css')}}">
+    {{--dropzone--}}
+    <link rel="stylesheet" href="{{asset('vendor/dropzone/min/dropzone.min.css')}}">
 @endpush
 @section('settings_title',trans('lang.area'))
 @section('settings_content')
@@ -39,16 +40,16 @@
   @include('layouts.media_modal',['collection'=>null])
 @endsection
 @push('scripts_lib')
-<!-- iCheck -->
-<script src="{{asset('plugins/iCheck/icheck.min.js')}}"></script>
-<!-- select2 -->
-<script src="{{asset('plugins/select2/select2.min.js')}}"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="{{asset('plugins/summernote/summernote-bs4.min.js')}}"></script>
-{{--dropzone--}}
-<script src="{{asset('plugins/dropzone/dropzone.js')}}"></script>
-<script type="text/javascript">
-    Dropzone.autoDiscover = false;
-    var dropzoneFields = [];
-</script>
+    <!-- iCheck -->
+
+    <!-- select2 -->
+    <script src="{{asset('vendor/select2/js/select2.full.min.js')}}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{asset('vendor/summernote/summernote.min.js')}}"></script>
+    {{--dropzone--}}
+    <script src="{{asset('vendor/dropzone/min/dropzone.min.js')}}"></script>
+    <script type="text/javascript">
+        Dropzone.autoDiscover = false;
+        var dropzoneFields = [];
+    </script>
 @endpush

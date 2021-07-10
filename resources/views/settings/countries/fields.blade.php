@@ -4,8 +4,8 @@
 <div style="flex: 50%;max-width: 50%;padding: 0 4px;" class="column">
     <!-- Name Field -->
     <div class="form-group row ">
-        {!! Form::label('name', trans('lang.country_name'), ['class' => 'col-3 control-label text-right']) !!}
-        <div class="col-9">
+        {!! Form::label('name', trans('lang.country_name'), ['class' => 'col-4 control-label text-right']) !!}
+        <div class="col-8">
             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => trans('lang.country_name_placeholder')]) !!}
             <div class="form-text text-muted">
                 {{ trans('lang.country_name_help') }}
@@ -36,8 +36,8 @@
 
     <!-- Code Field -->
     <div class="form-group row ">
-        {!! Form::label('code', trans('lang.country_code'), ['class' => 'col-3 control-label text-right']) !!}
-        <div class="col-9">
+        {!! Form::label('code', trans('lang.country_code'), ['class' => 'col-4 control-label text-right']) !!}
+        <div class="col-8">
             {!! Form::text('code', null, ['class' => 'form-control', 'placeholder' => trans('lang.country_code_placeholder')]) !!}
             <div class="form-text text-muted">
                 {{ trans('lang.country_code_help') }}
@@ -45,8 +45,8 @@
         </div>
     </div>
     <div class="form-group row">
-      {!! Form::label('currency_id', trans('lang.app_setting_default_currency'), ['class' => 'col-3 control-label text-right']) !!}
-      <div class="col-9">
+      {!! Form::label('currency_id', trans('lang.app_setting_default_currency'), ['class' => 'col-4 control-label text-right']) !!}
+      <div class="col-8">
           {!! Form::select('currency_id',
           $currencies
           ,null, ['class' => 'select2 form-control']) !!}
@@ -54,9 +54,9 @@
       </div>
   </div>
     <div class="form-group row ">
-      {!! Form::label('active', trans("lang.country_active"),['class' => 'col-3 control-label text-right']) !!}
+      {!! Form::label('active', trans("lang.country_active"),['class' => 'col-4 control-label text-right']) !!}
       <div class="checkbox icheck">
-          <label class="col-9 ml-2 form-check-inline">
+          <label class="col-8 ml-2 form-check-inline">
               {!! Form::hidden('active', 0) !!}
               {!! Form::checkbox('active', 1, null) !!}
           </label>

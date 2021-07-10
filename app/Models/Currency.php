@@ -33,7 +33,8 @@ class Currency extends Model
         'name',
         'symbol',
         'code',
-        'decimal_digits'
+        'decimal_digits',
+        'currency_right'
     ];
 
     /**
