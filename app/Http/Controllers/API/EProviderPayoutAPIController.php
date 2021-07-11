@@ -42,7 +42,7 @@ class EProviderPayoutAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            $this->eProviderPayoutRepository->pushCriteria(new RequestCriteria($request));
+            //$this->eProviderPayoutRepository->pushCriteria(new RequestCriteria($request));
             $this->eProviderPayoutRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

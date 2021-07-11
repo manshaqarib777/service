@@ -43,7 +43,7 @@ class GalleryAPIController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $this->galleryRepository->pushCriteria(new RequestCriteria($request));
+            //$this->galleryRepository->pushCriteria(new RequestCriteria($request));
             $this->galleryRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

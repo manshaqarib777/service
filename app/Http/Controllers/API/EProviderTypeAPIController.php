@@ -42,7 +42,7 @@ class EProviderTypeAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            $this->eProviderTypeRepository->pushCriteria(new RequestCriteria($request));
+            //$this->eProviderTypeRepository->pushCriteria(new RequestCriteria($request));
             $this->eProviderTypeRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

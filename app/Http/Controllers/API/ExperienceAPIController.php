@@ -42,7 +42,7 @@ class ExperienceAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            $this->experienceRepository->pushCriteria(new RequestCriteria($request));
+            //$this->experienceRepository->pushCriteria(new RequestCriteria($request));
             $this->experienceRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

@@ -42,7 +42,7 @@ class AwardAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            $this->awardRepository->pushCriteria(new RequestCriteria($request));
+            //$this->awardRepository->pushCriteria(new RequestCriteria($request));
             $this->awardRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());
