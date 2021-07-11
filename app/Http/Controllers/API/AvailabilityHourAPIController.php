@@ -48,7 +48,7 @@ class AvailabilityHourAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            //$this->availabilityHourRepository->pushCriteria(new RequestCriteria($request));
+            $this->availabilityHourRepository->pushCriteria(new RequestCriteria($request));
             $this->availabilityHourRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

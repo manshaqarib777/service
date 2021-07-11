@@ -41,7 +41,7 @@ class EProviderAPIController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            //$this->eProviderRepository->pushCriteria(new RequestCriteria($request));
+            $this->eProviderRepository->pushCriteria(new RequestCriteria($request));
             $this->eProviderRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

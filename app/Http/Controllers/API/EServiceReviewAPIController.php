@@ -43,7 +43,7 @@ class EServiceReviewAPIController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $this->eServiceReviewRepository->pushCriteria(new RequestCriteria($request));
+            //$this->eServiceReviewRepository->pushCriteria(new RequestCriteria($request));
             if (auth()->check()) {
                 $this->eServiceReviewRepository->pushCriteria(new EServiceReviewsOfUserCriteria(auth()->id()));
             }
