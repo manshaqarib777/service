@@ -59,7 +59,7 @@ class EServiceAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            //$this->eServiceRepository->pushCriteria(new RequestCriteria($request));
+            $this->eServiceRepository->pushCriteria(new RequestCriteria($request));
             $this->eServiceRepository->pushCriteria(new EServicesOfUserCriteria(auth()->id()));
             $this->eServiceRepository->pushCriteria(new NearCriteria($request));
         } catch (RepositoryException $e) {
