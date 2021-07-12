@@ -16,7 +16,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
-
+use App\Repositories\CountryRepository;
 class DashboardController extends Controller
 {
 
@@ -33,14 +33,17 @@ class DashboardController extends Controller
     private $eProviderRepository;
     /** @var  EarningRepository */
     private $earningRepository;
+    private $countryRepository;
 
-    public function __construct(BookingRepository $bookingRepo, UserRepository $userRepo, EarningRepository $earningRepository, EProviderRepository $eProviderRepo)
+    public function __construct(BookingRepository $bookingRepo, UserRepository $userRepo, EarningRepository $earningRepository, EProviderRepository $eProviderRepo,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->bookingRepository = $bookingRepo;
         $this->userRepository = $userRepo;
         $this->eProviderRepository = $eProviderRepo;
         $this->earningRepository = $earningRepository;
+        $this->countryRepository = $countryRepository;
+
     }
 
     /**
@@ -50,19 +53,21 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $countries = $this->countryRepository->all()->pluck('name','id');
         $bookingsCount = $this->bookingRepository->count();
         $membersCount = $this->userRepository->count();
         $eprovidersCount = $this->eProviderRepository->count();
         $eProviders = $this->eProviderRepository->limit(4)->get();
         $earning = $this->earningRepository->all()->sum('total_earning');
         $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
-//        dd($ajaxEarningUrl);
+        //dd($ajaxEarningUrl);
         return view('dashboard.index')
             ->with("ajaxEarningUrl", $ajaxEarningUrl)
             ->with("bookingsCount", $bookingsCount)
             ->with("eProvidersCount", $eprovidersCount)
             ->with("eProviders", $eProviders)
             ->with("membersCount", $membersCount)
+            ->with("countries", $countries)
             ->with("earning", $earning);
     }
 }

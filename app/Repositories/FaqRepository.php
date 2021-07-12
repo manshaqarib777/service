@@ -1,10 +1,4 @@
 <?php
-/**
- * File name: FaqRepository.php
- * Last modified: 2021.01.03 at 15:29:51
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Repositories;
 
@@ -19,7 +13,7 @@ use InfyOm\Generator\Common\BaseRepository;
  * @method Faq findWithoutFail($id, $columns = ['*'])
  * @method Faq find($id, $columns = ['*'])
  * @method Faq first($columns = ['*'])
- */
+*/
 class FaqRepository extends BaseRepository
 {
     /**

@@ -31,6 +31,7 @@ class EProviderTypeController extends Controller
     private $customFieldRepository;
 
 
+
     public function __construct(EProviderTypeRepository $eProviderTypeRepo, CustomFieldRepository $customFieldRepo)
     {
         parent::__construct();
@@ -64,6 +65,8 @@ class EProviderTypeController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->eProviderTypeRepository->model());
             $html = generateCustomField($customFields);
         }
+
+
         return view('e_provider_types.create')->with("customFields", isset($html) ? $html : false);
     }
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * File name: CurrencyRepository.php
- * Last modified: 2021.01.03 at 15:29:51
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Repositories;
 
@@ -19,7 +13,7 @@ use InfyOm\Generator\Common\BaseRepository;
  * @method Currency findWithoutFail($id, $columns = ['*'])
  * @method Currency find($id, $columns = ['*'])
  * @method Currency first($columns = ['*'])
- */
+*/
 class CurrencyRepository extends BaseRepository
 {
     /**
@@ -29,8 +23,7 @@ class CurrencyRepository extends BaseRepository
         'name',
         'symbol',
         'code',
-        'decimal_digits',
-        'rounding'
+        'decimal_digits'
     ];
 
     /**

@@ -38,7 +38,7 @@ class FaqAPIController extends Controller
     public function index(Request $request)
     {
         try{
-            $this->faqRepository->pushCriteria(new RequestCriteria($request));
+            //$this->faqRepository->pushCriteria(new RequestCriteria($request));
             $this->faqRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

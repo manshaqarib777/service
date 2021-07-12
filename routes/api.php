@@ -62,6 +62,7 @@ Route::resource('booking_statuses', 'API\BookingStatusAPIController')->except([
 ]);
 Route::resource('option_groups', 'API\OptionGroupAPIController');
 Route::resource('options', 'API\OptionAPIController');
+Route::get('countries', 'API\UserAPIController@countries');
 
 Route::middleware('auth:api')->group(function () {
     Route::group(['middleware' => ['role:provider']], function () {

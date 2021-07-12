@@ -86,7 +86,8 @@ class EProvider extends Model implements HasMedia, Castable
         'availability_range',
         'available',
         'featured',
-        'accepted'
+        'accepted',
+        'country_id'
     ];
 
     /**
@@ -343,5 +344,9 @@ class EProvider extends Model implements HasMedia, Castable
     public function getHasMediaAttribute(): bool
     {
         return $this->hasMedia('image');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 }

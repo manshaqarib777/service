@@ -40,7 +40,8 @@ class EProviderType extends Model
     public $fillable = [
         'name',
         'commission',
-        'disabled'
+        'disabled',
+
     ];
     /**
      * The attributes that should be casted to native types.
@@ -84,6 +85,9 @@ class EProviderType extends Model
     {
         return $this->morphMany('App\Models\CustomFieldValue', 'customizable');
     }
-
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
+    }
 
 }

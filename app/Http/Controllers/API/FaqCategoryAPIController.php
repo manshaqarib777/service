@@ -1,27 +1,23 @@
 <?php
-/*
- * File name: FaqCategoryAPIController.php
- * Last modified: 2021.02.11 at 09:26:34
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Http\Controllers\API;
 
 
-use App\Http\Controllers\Controller;
 use App\Models\FaqCategory;
 use App\Repositories\FaqCategoryRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Support\Facades\Response;
 use Prettus\Repository\Exceptions\RepositoryException;
+use Flash;
 
 /**
  * Class FaqCategoryController
  * @package App\Http\Controllers\API
  */
+
 class FaqCategoryAPIController extends Controller
 {
     /** @var  FaqCategoryRepository */
@@ -37,18 +33,17 @@ class FaqCategoryAPIController extends Controller
      * GET|HEAD /faqCategories
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         try{
-            $this->faqCategoryRepository->pushCriteria(new RequestCriteria($request));
+            //$this->faqCategoryRepository->pushCriteria(new RequestCriteria($request));
             $this->faqCategoryRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());
         }
         $faqCategories = $this->faqCategoryRepository->all();
-        $this->filterCollection($request, $faqCategories);
 
         return $this->sendResponse($faqCategories->toArray(), 'Faq Categories retrieved successfully');
     }
@@ -57,9 +52,9 @@ class FaqCategoryAPIController extends Controller
      * Display the specified FaqCategory.
      * GET|HEAD /faqCategories/{id}
      *
-     * @param int $id
+     * @param  int $id
      *
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {

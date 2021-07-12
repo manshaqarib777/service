@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class CategoryController extends Controller
 {
     /** @var  CategoryRepository */
@@ -30,18 +30,21 @@ class CategoryController extends Controller
      * @var CustomFieldRepository
      */
     private $customFieldRepository;
+    private $countryRepository;
 
     /**
      * @var UploadRepository
      */
     private $uploadRepository;
 
-    public function __construct(CategoryRepository $categoryRepo, CustomFieldRepository $customFieldRepo, UploadRepository $uploadRepo)
+    public function __construct(CategoryRepository $categoryRepo, CustomFieldRepository $customFieldRepo, UploadRepository $uploadRepo,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->categoryRepository = $categoryRepo;
         $this->customFieldRepository = $customFieldRepo;
         $this->uploadRepository = $uploadRepo;
+        $this->countryRepository = $countryRepository;
+
     }
 
     /**
@@ -63,13 +66,14 @@ class CategoryController extends Controller
     public function create()
     {
         $parentCategory = $this->categoryRepository->pluck('name', 'id');
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
         $hasCustomField = in_array($this->categoryRepository->model(), setting('custom_field_models', []));
         if ($hasCustomField) {
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->categoryRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('categories.create')->with("customFields", isset($html) ? $html : false)->with("parentCategory", $parentCategory);
+        return view('categories.create')->with("customFields", isset($html) ? $html : false)->with('countries',$countries)->with("parentCategory", $parentCategory);
     }
 
     /**
@@ -131,6 +135,7 @@ class CategoryController extends Controller
     {
         $category = $this->categoryRepository->findWithoutFail($id);
         $parentCategory = $this->categoryRepository->pluck('name', 'id')->prepend(__('lang.category_parent_id_placeholder'), '');
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
         if (empty($category)) {
             Flash::error(__('lang.not_found', ['operator' => __('lang.category')]));
@@ -144,7 +149,7 @@ class CategoryController extends Controller
             $html = generateCustomField($customFields, $customFieldsValues);
         }
 
-        return view('categories.edit')->with('category', $category)->with("customFields", isset($html) ? $html : false)->with("parentCategory", $parentCategory);
+        return view('categories.edit')->with('category', $category)->with('countries',$countries)->with("customFields", isset($html) ? $html : false)->with("parentCategory", $parentCategory);
     }
 
     /**

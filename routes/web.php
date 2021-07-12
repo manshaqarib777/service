@@ -33,7 +33,9 @@ Route::get('payments/stripe', 'StripeController@index');
 Route::get('payments/paypal/express-checkout', 'PayPalController@getExpressCheckout')->name('paypal.express-checkout');
 Route::get('payments/paypal/express-checkout-success', 'PayPalController@getExpressCheckoutSuccess');
 Route::get('payments/paypal', 'PayPalController@index')->name('paypal.index');
-
+Route::get('ajaxed-get-states','HomeController@ajaxGetStates')->name('get-states-ajax');
+Route::get('ajaxed-get-areas','HomeController@ajaxGetAreas')->name('get-areas-ajax');
+Route::post('/country/change', 'HomeController@changeCountry')->name('country.change');
 Route::get('firebase/sw-js', 'AppSettingController@initFirebase');
 
 
@@ -74,6 +76,15 @@ Route::middleware('auth')->group(function () {
                 'show'
             ]);
             Route::resource('taxes', 'TaxController')->except([
+                'show'
+            ]);
+            Route::resource('countries', 'CountryController')->except([
+                'show'
+            ]);
+            Route::resource('states', 'StateController')->except([
+                'show'
+            ]);
+            Route::resource('areas', 'AreaController')->except([
                 'show'
             ]);
             Route::get('users/login-as-user/{id}', 'UserController@loginAsUser')->name('users.login-as-user');

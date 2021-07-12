@@ -72,7 +72,9 @@ class Booking extends Model
         'start_at',
         'ends_at',
         'hint',
-        'cancel'
+        'cancel',
+        'e_service_id'
+
     ];
     /**
      * The attributes that should be casted to native types.
@@ -168,11 +170,14 @@ class Booking extends Model
         $total = $this->getSubtotal();
         $taxValue = 0;
         foreach ($this->taxes as $tax) {
-            if ($tax->type == 'percent') {
-                $taxValue += ($total * $tax->value / 100);
-            } else {
-                $taxValue += $tax->value;
-            }
+            // if($this->eService->country_id==$tax->country_id)
+            // {
+                if ($tax->type == 'percent') {
+                    $taxValue += ($total * $tax->value / 100);
+                } else {
+                    $taxValue += $tax->value;
+                }
+            //}
         }
         return $taxValue;
     }
@@ -183,11 +188,14 @@ class Booking extends Model
         if (empty($this->coupon)) {
             return 0;
         } else {
-            if ($this->coupon->discount_type == 'percent') {
-                return -($total * $this->coupon->discount / 100);
-            } else {
-                return -$this->coupon->discount;
-            }
+            // if($this->eService->country_id==$this->coupon->country_id)
+            // {
+                if ($this->coupon->discount_type == 'percent') {
+                    return -($total * $this->coupon->discount / 100);
+                } else {
+                    return -$this->coupon->discount;
+                }
+            //}
         }
     }
 
@@ -222,6 +230,10 @@ class Booking extends Model
             $hours = 0;
         }
         return $hours;
+    }
+    public function eService()
+    {
+        return $this->belongsTo(EService::class, 'e_service_id', 'id');
     }
 
 }

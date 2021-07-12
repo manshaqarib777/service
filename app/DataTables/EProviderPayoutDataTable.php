@@ -44,8 +44,11 @@ class EProviderPayoutDataTable extends DataTable
             ->editColumn('paid_date', function ($eProviderPayout) {
                 return getDateColumn($eProviderPayout, "paid_date");
             })
+            ->editColumn('country', function ($eProviderPayout) {
+                return $eProviderPayout['eProvider']['country']['name'];
+            })
             ->editColumn('amount', function ($eproviders_payout) {
-                return getPriceColumn($eproviders_payout, 'amount');
+                return getPriceColumn($eproviders_payout, 'amount',$eproviders_payout['eProvider']['country']['id']);
             })
             ->rawColumns(array_merge($columns));
 
@@ -64,6 +67,11 @@ class EProviderPayoutDataTable extends DataTable
                 'data' => 'e_provider.name',
                 'name' => 'eProvider.name',
                 'title' => trans('lang.e_provider_payout_e_provider_id'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

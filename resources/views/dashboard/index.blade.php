@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@push('css_lib')
+    <link rel="stylesheet" href="{{asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2/css/select2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+@endpush
 @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header content-header{{setting('fixed_header')}}">
@@ -12,6 +17,15 @@
                         <li class="breadcrumb-item"><a href="#"><i class="fas fa-tachometer-alt"></i> {{trans('lang.dashboard')}}</a></li>
                         <li class="breadcrumb-item active">{{trans('lang.dashboard')}}</li>
                     </ol>
+                    {!! Form::open(['method' => 'get']) !!}
+                    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
+                        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+                        <div class="col-9">
+                            {!! Form::select('country_id', $countries, null, ['class' => 'select2 form-control', 'onchange'=>"this.form.submit()"]) !!}
+                            <div class="form-text text-muted">{{ trans('lang.app_setting_default_country_help') }}</div>
+                        </div>
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -172,6 +186,7 @@
 @endsection
 @push('scripts_lib')
     <script src="{{asset('vendor/chart.js/Chart.min.js')}}"></script>
+    <script src="{{asset('vendor/select2/js/select2.full.min.js')}}"></script>    
 @endpush
 @push('scripts')
     <script type="text/javascript">

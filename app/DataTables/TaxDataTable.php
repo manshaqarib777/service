@@ -42,11 +42,14 @@ class TaxDataTable extends DataTable
             ->editColumn('updated_at', function ($tax) {
                 return getDateColumn($tax, 'updated_at');
             })
+            ->editColumn('country', function ($tax) {
+                return $tax['country']['name'];
+            })
             ->editColumn('value', function ($tax) {
                 if ($tax['type'] == 'percent') {
                     return $tax['value'] . "%";
                 } else {
-                    return getPriceColumn($tax, 'value');
+                    return getPriceColumn($tax, 'value',$tax['country']['id']);
                 }
             })
             ->editColumn('type', function ($tax) {
@@ -69,6 +72,11 @@ class TaxDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.tax_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

@@ -85,7 +85,8 @@ class EService extends Model implements HasMedia, Castable
         'description',
         'featured',
         'available',
-        'e_provider_id'
+        'e_provider_id',
+        'country_id'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -303,5 +304,9 @@ class EService extends Model implements HasMedia, Castable
     public function discountables()
     {
         return $this->morphMany('App\Models\Discountable', 'discountable');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 }

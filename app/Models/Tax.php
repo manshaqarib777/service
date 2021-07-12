@@ -43,7 +43,9 @@ class Tax extends Model
     public $fillable = [
         'name',
         'value',
-        'type'
+        'type',
+        'country_id'
+
     ];
     /**
      * The attributes that should be casted to native types.
@@ -82,6 +84,10 @@ class Tax extends Model
     public function customFieldsValues()
     {
         return $this->morphMany('App\Models\CustomFieldValue', 'customizable');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 
 

@@ -1,15 +1,9 @@
 <?php
-/*
- * File name: UpdateCategoryRequest.php
- * Last modified: 2021.01.21 at 22:12:17
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
- */
 
 namespace App\Http\Requests;
 
-use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Category;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -32,18 +26,5 @@ class UpdateCategoryRequest extends FormRequest
     public function rules()
     {
         return Category::$rules;
-    }
-
-    /**
-     * @param array $keys
-     * @return array
-     */
-    public function all($keys = NULL): array
-    {
-        $input = parent::all();
-        if (!isset($input['parent_id']) || $input['parent_id'] == 0) {
-            $input['parent_id'] = null;
-        }
-        return $input;
     }
 }

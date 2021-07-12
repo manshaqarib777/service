@@ -41,6 +41,9 @@ class ExperienceDataTable extends DataTable
             ->editColumn('title', function ($experience) {
                 return $experience->title;
             })
+            ->editColumn('country', function ($eProvider) {
+                return $eProvider['eProvider']['country']['name'];
+            })
             ->editColumn('description', function ($experience) {
                 return getStripedHtmlColumn($experience, 'description');
             })
@@ -64,6 +67,11 @@ class ExperienceDataTable extends DataTable
             [
                 'data' => 'title',
                 'title' => trans('lang.experience_title'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

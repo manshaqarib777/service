@@ -48,20 +48,20 @@
           <table class="table">
             <tbody><tr>
               <th class="text-right">{{trans('lang.booking_subtotal')}}</th>
-              <td>{!! getPrice($subtotal) !!}</td>
+              <td>{!! getPrice($subtotal,'price',$booking->eService->country_id) !!}</td>
             </tr>
             <tr>
               <th class="text-right">{{trans('lang.booking_additional_fee')}}</th>
-              <td>{!! getPrice($booking['additional_fee'])!!}</td>
+              <td>{!! getPrice($booking['additional_fee'],'price',$booking->eService->country_id)!!}</td>
             </tr>
             <tr>
               <th class="text-right">{{trans('lang.booking_tax')}} ({!!$booking->tax!!}%) </th>
-              <td>{!! getPrice($taxAmount)!!}</td>
+              <td>{!! getPrice($taxAmount,'price',$booking->eService->country_id)!!}</td>
             </tr>
 
             <tr>
               <th class="text-right">{{trans('lang.booking_total')}}</th>
-                <td>{!!getPrice($total)!!}</td>
+                <td>{!!getPrice($total,'price',$booking->eService->country_id)!!}</td>
             </tr>
             </tbody>
           </table>

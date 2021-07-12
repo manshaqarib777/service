@@ -1,23 +1,20 @@
 <?php
 
 
-/*
+/**
  * File name: CurrencyDataTable.php
- * Last modified: 2021.04.12 at 19:39:48
+ * Last modified: 2020.06.11 at 16:03:24
  * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2021
+ * Copyright (c) 2020
  */
 
 namespace App\DataTables;
 
 use App\Models\Currency;
 use App\Models\CustomField;
-use App\Models\Post;
-use Barryvdh\DomPDF\Facade as PDF;
-use Yajra\DataTables\DataTableAbstract;
-use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\EloquentDataTable;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class CurrencyDataTable extends DataTable
 {
@@ -31,7 +28,7 @@ class CurrencyDataTable extends DataTable
      * Build DataTable class.
      *
      * @param mixed $query Results from query() method.
-     * @return DataTableAbstract
+     * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
     {
@@ -40,15 +37,6 @@ class CurrencyDataTable extends DataTable
         $dataTable = $dataTable
             ->editColumn('updated_at', function ($currency) {
                 return getDateColumn($currency, 'updated_at');
-            })
-            ->editColumn('name', function ($currency) {
-                return $currency->name;
-            })
-            ->editColumn('symbol', function ($currency) {
-                return $currency->symbol;
-            })
-            ->editColumn('code', function ($currency) {
-                return $currency->code;
             })
             ->addColumn('action', 'settings.currencies.datatables_actions')
             ->rawColumns(array_merge($columns, ['action']));
@@ -85,11 +73,6 @@ class CurrencyDataTable extends DataTable
 
             ],
             [
-                'data' => 'rounding',
-                'title' => trans('lang.currency_rounding'),
-
-            ],
-            [
                 'data' => 'updated_at',
                 'title' => trans('lang.currency_updated_at'),
                 'searchable' => false,
@@ -114,7 +97,7 @@ class CurrencyDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param Post $model
+     * @param \App\Models\Post $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query(Currency $model)
@@ -125,7 +108,7 @@ class CurrencyDataTable extends DataTable
     /**
      * Optional method if you want to use html builder.
      *
-     * @return Builder
+     * @return \Yajra\DataTables\Html\Builder
      */
     public function html()
     {

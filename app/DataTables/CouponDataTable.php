@@ -42,6 +42,10 @@ class CouponDataTable extends DataTable
             ->editColumn('description', function ($coupon) {
                 return getStripedHtmlColumn($coupon, 'description');
             })
+            
+            ->editColumn('country', function ($coupon) {
+                return $coupon['country']['name'];
+            })
             ->editColumn('expires_at', function ($coupon) {
                 return getDateColumn($coupon, 'expires_at');
             })
@@ -52,7 +56,7 @@ class CouponDataTable extends DataTable
                 if ($coupon['discount_type'] == 'percent') {
                     return $coupon['discount'] . "%";
                 }
-                return getPriceColumn($coupon, 'discount');
+                return getPriceColumn($coupon, 'discount',$coupon['country']['id']);
             })
             ->addColumn('action', 'coupons.datatables_actions')
             ->rawColumns(array_merge($columns, ['action']));
@@ -71,6 +75,11 @@ class CouponDataTable extends DataTable
             [
                 'data' => 'code',
                 'title' => trans('lang.coupon_code'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

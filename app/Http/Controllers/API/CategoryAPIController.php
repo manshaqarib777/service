@@ -44,7 +44,7 @@ class CategoryAPIController extends Controller
     public function index(Request $request)
     {
         try{
-            $this->categoryRepository->pushCriteria(new RequestCriteria($request));
+            //$this->categoryRepository->pushCriteria(new RequestCriteria($request));
             $this->categoryRepository->pushCriteria(new ParentCriteria($request));
             $this->categoryRepository->pushCriteria(new NearCriteria($request));
             $this->categoryRepository->pushCriteria(new LimitOffsetCriteria($request));

@@ -41,8 +41,11 @@ class OptionDataTable extends DataTable
             ->editColumn('image', function ($option) {
                 return getMediaColumn($option, 'image');
             })
+            ->editColumn('country', function ($option) {
+                return $option['eService']['country']['name'];
+            })
             ->editColumn('price', function ($option) {
-                return getPriceColumn($option);
+                return getPriceColumn($option,'price',$option['eService']['country']['id']);
             })
             ->editColumn('e_service.name', function ($option) {
                 return getLinksColumnByRouteName([$option->eService], 'eServices.edit', 'id', 'name');
@@ -73,6 +76,11 @@ class OptionDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.option_name'),
+
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
 
             ],
             [

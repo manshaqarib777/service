@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class TaxController extends Controller
 {
     /** @var  TaxRepository */
@@ -29,13 +29,16 @@ class TaxController extends Controller
      * @var CustomFieldRepository
      */
     private $customFieldRepository;
+    private $countryRepository;
 
 
-    public function __construct(TaxRepository $taxRepo, CustomFieldRepository $customFieldRepo)
+    public function __construct(TaxRepository $taxRepo, CustomFieldRepository $customFieldRepo,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->taxRepository = $taxRepo;
         $this->customFieldRepository = $customFieldRepo;
+        $this->countryRepository = $countryRepository;
+
 
     }
 
@@ -64,7 +67,9 @@ class TaxController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->taxRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('settings.taxes.create')->with("customFields", isset($html) ? $html : false);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+
+        return view('settings.taxes.create')->with("customFields", isset($html) ? $html : false)->with('countries',$countries);
     }
 
     /**
@@ -134,8 +139,9 @@ class TaxController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
-        return view('settings.taxes.edit')->with('tax', $tax)->with("customFields", isset($html) ? $html : false);
+        return view('settings.taxes.edit')->with('tax', $tax)->with("customFields", isset($html) ? $html : false)->with('countries',$countries);
     }
 
     /**

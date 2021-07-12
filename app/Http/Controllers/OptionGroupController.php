@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Validator\Exceptions\ValidatorException;
+use App\Repositories\CountryRepository;
 
 class OptionGroupController extends Controller
 {
@@ -34,13 +35,15 @@ class OptionGroupController extends Controller
      * @var CustomFieldRepository
      */
     private $customFieldRepository;
+    private $countryRepository;
 
 
-    public function __construct(OptionGroupRepository $optionGroupRepo, CustomFieldRepository $customFieldRepo)
+    public function __construct(OptionGroupRepository $optionGroupRepo, CustomFieldRepository $customFieldRepo,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->optionGroupRepository = $optionGroupRepo;
         $this->customFieldRepository = $customFieldRepo;
+        $this->countryRepository = $countryRepository;
 
     }
 
@@ -69,7 +72,9 @@ class OptionGroupController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->optionGroupRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('option_groups.create')->with("customFields", isset($html) ? $html : false);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+
+        return view('option_groups.create')->with("customFields", isset($html) ? $html : false)->with('countries',$countries);
     }
 
     /**
@@ -118,8 +123,9 @@ class OptionGroupController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
+        $countries = $this->countryRepository->all()->pluck('name','id');
 
-        return view('option_groups.edit')->with('optionGroup', $optionGroup)->with("customFields", isset($html) ? $html : false);
+        return view('option_groups.edit')->with('optionGroup', $optionGroup)->with('countries',$countries)->with("customFields", isset($html) ? $html : false);
     }
 
     /**

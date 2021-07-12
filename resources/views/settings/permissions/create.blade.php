@@ -1,4 +1,15 @@
 @extends('layouts.settings.default')
+@push('css_lib')
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css')}}">
+    <!-- select2 -->
+    <link rel="stylesheet" href="{{asset('vendor/select2/css/select2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{asset('vendor/summernote/summernote-bs4.min.css')}}">
+    {{--dropzone--}}
+    <link rel="stylesheet" href="{{asset('vendor/dropzone/min/dropzone.min.css')}}">
+@endpush
 @section('settings_title',trans('lang.permission_create'))
 @section('settings_content')
     @include('adminlte-templates::common.errors')
@@ -30,3 +41,17 @@
         </div>
     </div>
 @endsection
+@push('scripts_lib')
+    <!-- iCheck -->
+
+    <!-- select2 -->
+    <script src="{{asset('vendor/select2/js/select2.full.min.js')}}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{asset('vendor/summernote/summernote.min.js')}}"></script>
+    {{--dropzone--}}
+    <script src="{{asset('vendor/dropzone/min/dropzone.min.js')}}"></script>
+    <script type="text/javascript">
+        Dropzone.autoDiscover = false;
+        var dropzoneFields = [];
+    </script>
+@endpush

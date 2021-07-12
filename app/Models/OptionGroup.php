@@ -40,7 +40,8 @@ class OptionGroup extends Model
     public $table = 'option_groups';
     public $fillable = [
         'name',
-        'allow_multiple'
+        'allow_multiple',
+        'country_id'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -91,5 +92,9 @@ class OptionGroup extends Model
     public function options()
     {
         return $this->hasMany(Option::class, 'option_group_id');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 }
