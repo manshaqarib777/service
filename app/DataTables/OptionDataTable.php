@@ -149,7 +149,13 @@ class OptionDataTable extends DataTable
                 ->where('e_provider_users.user_id', auth()->id())
                 ->groupBy("options.id")
                 ->select('options.*');
-        } else {
+        }
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eService.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        } 
+        else {
             return $model->newQuery()->with("eService")->with("optionGroup")->with('eService.eProvider');
         }
     }

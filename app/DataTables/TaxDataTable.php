@@ -119,7 +119,15 @@ class TaxDataTable extends DataTable
      */
     public function query(Tax $model)
     {
-        return $model->newQuery();
+        if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else
+        {
+            return $model->newQuery();
+        }
     }
 
     /**

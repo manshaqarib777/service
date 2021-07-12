@@ -189,7 +189,13 @@ class BookingDataTable extends DataTable
     {
         if (auth()->user()->hasRole('admin')) {
             return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->select('bookings.*');
-        } else if (auth()->user()->hasRole('provider')) {
+        }
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eService.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }         
+        else if (auth()->user()->hasRole('provider')) {
             $eProviderId = DB::raw("json_extract(e_provider, '$.id')");
             return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
                 ->where('e_provider_users.user_id', auth()->id())

@@ -120,7 +120,13 @@ class GalleryDataTable extends DataTable
                 ->groupBy('galleries.id')
                 ->select('galleries.*')
                 ->where('e_provider_users.user_id', auth()->id());
-        } else {
+        }
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        } 
+        else {
             return $model->newQuery()->with("eProvider")->select("galleries.*");
         }
     }

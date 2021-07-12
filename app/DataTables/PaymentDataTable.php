@@ -146,7 +146,13 @@ class PaymentDataTable extends DataTable
                 ->groupBy('payments.id')
                 ->orderBy('payments.id', 'desc')
                 ->select('payments.*');
-        } else {
+        } 
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('user.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             return $model->newQuery()->with("user")
                 ->with("paymentMethod")
                 ->with("paymentStatus")

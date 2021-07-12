@@ -124,7 +124,13 @@ class AddressDataTable extends DataTable
     {
         if (auth()->user()->hasRole('admin')) {
             return $model->newQuery()->with("user");
-        } else {
+        }
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        } 
+        else {
             return $model->newQuery()->with("user")->where('addresses.user_id', auth()->id());
         }
     }

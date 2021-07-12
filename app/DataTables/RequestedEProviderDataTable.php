@@ -168,7 +168,13 @@ class RequestedEProviderDataTable extends DataTable
     {
         if (auth()->user()->hasRole('admin')) {
             return $model->newQuery()->with("eProviderType")->where('e_providers.accepted', '0')->select("e_providers.*");
-        } else {
+        } 
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             return $model->newQuery()
                 ->with("eProviderType")
                 ->join("e_provider_users", "e_provider_id", "=", "e_providers.id")

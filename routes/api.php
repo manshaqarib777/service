@@ -38,6 +38,7 @@ Route::get('settings', 'API\UserAPIController@settings');
 
 Route::resource('e_provider_types', 'API\EProviderTypeAPIController');
 Route::resource('e_providers', 'API\EProviderAPIController');
+Route::get('e_providers/filter/{id}', 'API\EProviderAPIController@filter');
 Route::resource('availability_hours', 'API\AvailabilityHourAPIController');
 Route::resource('awards', 'API\AwardAPIController');
 Route::resource('experiences', 'API\ExperienceAPIController');
@@ -49,6 +50,7 @@ Route::resource('custom_pages', 'API\CustomPageAPIController');
 Route::resource('categories', 'API\CategoryAPIController');
 
 Route::resource('e_services', 'API\EServiceAPIController');
+//Route::get('e_services/filter/{id}', 'API\EServiceAPIController@filter');
 Route::resource('galleries', 'API\GalleryAPIController');
 Route::get('e_service_reviews/{id}', 'API\EServiceReviewAPIController@show')->name('e_service_reviews.show');
 Route::get('e_service_reviews', 'API\EServiceReviewAPIController@index')->name('e_service_reviews.index');

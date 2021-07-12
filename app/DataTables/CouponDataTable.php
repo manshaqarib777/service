@@ -147,7 +147,13 @@ class CouponDataTable extends DataTable
                 ->where("e_provider_users.user_id", auth()->id())
                 ->select("coupons.*")
                 ->union($eProviders);
-        } else {
+        }
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             $model->newQuery();
         }
 

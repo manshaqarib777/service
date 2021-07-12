@@ -120,7 +120,15 @@ class EProviderPayoutDataTable extends DataTable
      */
     public function query(EProviderPayout $model)
     {
-        return $model->newQuery()->with("eProvider")->select("$model->table.*");
+        if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else
+        {
+            return $model->newQuery()->with("eProvider")->select("$model->table.*");
+        }
     }
 
     /**

@@ -52,6 +52,20 @@ class EProviderAPIController extends Controller
         return $this->sendResponse($eProviders->toArray(), 'E Providers retrieved successfully');
     }
 
+    public function filter(Request $request,$id): JsonResponse
+    {
+        try {
+            $this->eProviderRepository->pushCriteria(new RequestCriteria($request));
+            $this->eProviderRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $eProviders = $this->eProviderRepository->where('country_id',$id)->get();
+        $this->filterCollection($request, $eProviders);
+
+        return $this->sendResponse($eProviders->toArray(), 'E Providers retrieved successfully');
+    }
+
     /**
      * Display the specified EProvider.
      * GET|HEAD /eProviders/{id}

@@ -38,6 +38,9 @@ class FavoriteDataTable extends DataTable
             ->editColumn('updated_at', function ($favorite) {
                 return getDateColumn($favorite, 'updated_at');
             })
+            ->editColumn('country', function ($faq) {
+                return $faq['eService']['country']['name'];
+            })
             ->editColumn('options', function ($favorite) {
                 return getArrayColumn($favorite->options, 'name');
             })
@@ -65,6 +68,11 @@ class FavoriteDataTable extends DataTable
                 'data' => 'e_service.name',
                 'name' => 'eService.name',
                 'title' => trans('lang.e_service'),
+            ],
+            [
+                'data' => 'country',
+                'title' => trans('lang.country'),
+
             ],
             [
                 'data' => 'options',
@@ -109,7 +117,13 @@ class FavoriteDataTable extends DataTable
     {
         if (auth()->user()->hasRole('admin')) {
             return $model->newQuery()->with("eService")->with("user")->select("favorites.*");
-        } else {
+        } 
+        else if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eService.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             return $model->newQuery()->with("eService")->with("user")
                 ->join("e_services", "e_services.id", "=", "favorites.e_service_id")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "e_services.e_provider_id")

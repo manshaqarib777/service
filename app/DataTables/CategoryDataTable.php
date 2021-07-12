@@ -148,7 +148,14 @@ class CategoryDataTable extends DataTable
      */
     public function query(Category $model)
     {
-        return $model->newQuery()->with("parentCategory")->select("categories.*");
+        if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }else
+        {
+            return $model->newQuery()->with("parentCategory")->select("categories.*");
+        }
     }
 
     /**

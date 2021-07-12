@@ -24,12 +24,6 @@ class FaqDataTable extends DataTable
      */
     public function dataTable($query)
     {
-        if (auth()->user()->hasRole('client'))
-            $query = $query->where('user_id', auth()->id());
-        if (auth()->user()->hasRole('branch'))
-            $query = $query->whereHas('faqCategory.country', function($q){
-                return $q->where('countries.id',get_role_country_id('branch'));
-            });
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
@@ -53,7 +47,15 @@ class FaqDataTable extends DataTable
      */
     public function query(Faq $model)
     {
-        return $model->newQuery()->with("faqCategory")->select('faqs.*');
+        if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('faqCategory.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else
+        {
+            return $model->newQuery()->with("faqCategory")->select('faqs.*');
+        }
     }
 
     /**

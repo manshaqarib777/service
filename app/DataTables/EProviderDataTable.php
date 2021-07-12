@@ -182,7 +182,13 @@ class EProviderDataTable extends DataTable
                 ->where('e_provider_users.user_id', auth()->id())
                 ->groupBy("e_providers.id")
                 ->select("e_providers.*");
-        } else {
+        } 
+        elseif(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             return $model->newQuery();
         }
     }

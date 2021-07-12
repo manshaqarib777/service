@@ -128,7 +128,13 @@ class EServiceReviewDataTable extends DataTable
         } else if (auth()->user()->hasRole('customer')) {
             return $model->newQuery()->where('e_service_reviews.user_id', auth()->id())
                 ->select('e_service_reviews.*');
-        } else {
+        } 
+        elseif(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eService.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else {
             return $model->newQuery()->with("user")->with("eService");
         }
 

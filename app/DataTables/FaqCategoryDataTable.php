@@ -52,7 +52,15 @@ class FaqCategoryDataTable extends DataTable
      */
     public function query(FaqCategory $model)
     {
-        return $model->newQuery();
+        if(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else
+        {
+            return $model->newQuery();
+        }
     }
 
     /**
@@ -94,11 +102,11 @@ class FaqCategoryDataTable extends DataTable
             
             ],
             [
-  'data' => 'updated_at',
-  'title' => trans('lang.faq_category_updated_at'),
-  'searchable'=>false,
-]
-            ];
+            'data' => 'updated_at',
+            'title' => trans('lang.faq_category_updated_at'),
+            'searchable'=>false,
+            ]
+        ];
 
         $hasCustomField = in_array(FaqCategory::class, setting('custom_field_models',[]));
         if ($hasCustomField) {

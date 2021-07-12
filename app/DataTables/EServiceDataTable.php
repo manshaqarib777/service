@@ -170,7 +170,15 @@ class EServiceDataTable extends DataTable
                 ->where('e_provider_users.user_id', auth()->id())
                 ->select('e_services.*');
         }
-        return $model->newQuery()->with("eProvider")->select("e_services.*");
+        elseif(auth()->user()->hasRole('branch')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else
+        {
+            return $model->newQuery()->with("eProvider")->select("e_services.*");
+        }
     }
 
     /**

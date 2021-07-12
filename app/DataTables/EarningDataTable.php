@@ -143,6 +143,11 @@ class EarningDataTable extends DataTable
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "earnings.e_provider_id")
                 ->where('e_provider_users.user_id', auth()->id())->select('earnings.*');
         }
+        elseif(auth()->user()->hasRole('branch')){
+            return $model->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
     }
 
     /**
