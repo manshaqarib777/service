@@ -121,7 +121,7 @@ class EServiceAPIController extends Controller
     public function show(Request $request, int $id): JsonResponse
     {
         try {
-            //$this->eServiceRepository->pushCriteria(new RequestCriteria($request));
+            $this->eServiceRepository->pushCriteria(new RequestCriteria($request));
             $this->eServiceRepository->pushCriteria(new LimitOffsetCriteria($request));
         } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());

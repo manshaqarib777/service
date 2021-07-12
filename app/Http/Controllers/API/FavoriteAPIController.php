@@ -45,7 +45,7 @@ class FavoriteAPIController extends Controller
     public function index(Request $request)
     {
         try {
-            //$this->favoriteRepository->pushCriteria(new RequestCriteria($request));
+            $this->favoriteRepository->pushCriteria(new RequestCriteria($request));
             $this->favoriteRepository->pushCriteria(new LimitOffsetCriteria($request));
             $this->favoriteRepository->pushCriteria(new DistinctCriteria());
         } catch (RepositoryException $e) {
