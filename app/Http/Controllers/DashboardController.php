@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use App\Repositories\CountryRepository;
+use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
 
@@ -51,13 +52,28 @@ class DashboardController extends Controller
      *
      * @return Application|Factory|Response|View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $country_id=1;
+        
+        if($request->input('country_id'))
+        {
+            $country_id=$request->input('country_id');
+        }
+        $country = $this->countryRepository->find($country_id);
         $countries = $this->countryRepository->all()->pluck('name','id');
-        $bookingsCount = $this->bookingRepository->count();
-        $membersCount = $this->userRepository->count();
-        $eprovidersCount = $this->eProviderRepository->count();
-        $eProviders = $this->eProviderRepository->limit(4)->get();
+
+        $bookingsCount = $this->bookingRepository->whereHas('eService.country', function($q) use ($country_id){
+            return $q->where('countries.id',$country_id);
+        })->count();
+
+        $membersCount = $this->userRepository->where('country_id',$country_id)->count();
+
+
+        $eprovidersCount = $this->eProviderRepository->where('country_id',$country_id)->count();
+
+        $eProviders = $this->eProviderRepository->where('country_id',$country_id)->limit(4)->get();
+
         $earning = $this->earningRepository->all()->sum('total_earning');
         $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
         //dd($ajaxEarningUrl);
@@ -68,6 +84,7 @@ class DashboardController extends Controller
             ->with("eProviders", $eProviders)
             ->with("membersCount", $membersCount)
             ->with("countries", $countries)
-            ->with("earning", $earning);
+            ->with("earning", $earning)
+            ->with("country", $country);
     }
 }
