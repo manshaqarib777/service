@@ -52,6 +52,22 @@ class ExperienceAPIController extends Controller
         return $this->sendResponse($experiences->toArray(), 'Experiences retrieved successfully');
     }
 
+
+
+    public function filter(Request $request,$id): JsonResponse
+    {
+        try {
+            $this->experienceRepository->pushCriteria(new RequestCriteria($request));
+            $this->experienceRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $experiences = $this->experienceRepository->whereHas('eProvider.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($experiences->toArray(), 'Experiences retrieved successfully');
+    }
     /**
      * Display the specified Experience.
      * GET|HEAD /experiences/{id}

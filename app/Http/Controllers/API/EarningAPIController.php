@@ -52,6 +52,21 @@ class EarningAPIController extends Controller
         return $this->sendResponse($earnings->toArray(), 'Earnings retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try{
+            $this->earningRepository->pushCriteria(new RequestCriteria($request));
+            $this->earningRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $earnings = $this->earningRepository->whereHas('eProvider.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($earnings->toArray(), 'Earnings retrieved successfully');
+    }
+
     /**
      * Display the specified Earning.
      * GET|HEAD /earnings/{id}

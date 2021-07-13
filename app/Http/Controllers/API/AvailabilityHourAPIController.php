@@ -58,6 +58,22 @@ class AvailabilityHourAPIController extends Controller
         return $this->sendResponse($availabilityHours->toArray(), 'Availability Hours retrieved successfully');
     }
 
+
+    public function filter(Request $request,$id): JsonResponse
+    {
+        try {
+            $this->availabilityHourRepository->pushCriteria(new RequestCriteria($request));
+            $this->availabilityHourRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $availabilityHours = $this->availabilityHourRepository->whereHas('eProvider.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($availabilityHours->toArray(), 'Availability Hours retrieved successfully');
+    }
+
     /**
      * Display the specified AvailabilityHour.
      * GET|HEAD /availabilityHours/{id}

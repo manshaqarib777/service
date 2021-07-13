@@ -48,6 +48,19 @@ class FaqCategoryAPIController extends Controller
         return $this->sendResponse($faqCategories->toArray(), 'Faq Categories retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->faqCategoryRepository->pushCriteria(new RequestCriteria($request));
+            $this->faqCategoryRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $faqCategories = $this->faqCategoryRepository->where('country_id',$id)->get();
+        
+        return $this->sendResponse($faqCategories->toArray(), 'Faq Categories retrieved successfully');
+    }
+
     /**
      * Display the specified FaqCategory.
      * GET|HEAD /faqCategories/{id}

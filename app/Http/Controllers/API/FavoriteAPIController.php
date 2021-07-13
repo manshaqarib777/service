@@ -56,6 +56,22 @@ class FavoriteAPIController extends Controller
         return $this->sendResponse($favorites->toArray(), 'Favorites retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->favoriteRepository->pushCriteria(new RequestCriteria($request));
+            $this->favoriteRepository->pushCriteria(new LimitOffsetCriteria($request));
+            $this->favoriteRepository->pushCriteria(new DistinctCriteria());
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $favorites = $this->favoriteRepository->whereHas('eService.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($favorites->toArray(), 'Favorites retrieved successfully');
+    }
+
     /**
      * Display the specified Favorite.
      * GET|HEAD /favorites/{id}

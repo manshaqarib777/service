@@ -53,6 +53,22 @@ class OptionGroupAPIController extends Controller
         return $this->sendResponse($optionGroups->toArray(), 'Option Groups retrieved successfully');
     }
 
+
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->optionGroupRepository->pushCriteria(new RequestCriteria($request));
+            $this->optionGroupRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $optionGroups = $this->optionGroupRepository->where('country_id',$id)->get();
+
+        $this->filterCollection($request, $optionGroups);
+
+        return $this->sendResponse($optionGroups->toArray(), 'Option Groups retrieved successfully');
+    }
+
     /**
      * Display the specified OptionGroup.
      * GET|HEAD /optionGroups/{id}

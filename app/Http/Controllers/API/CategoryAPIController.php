@@ -56,6 +56,21 @@ class CategoryAPIController extends Controller
         return $this->sendResponse($categories->toArray(), 'Categories retrieved successfully');
     }
 
+
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->categoryRepository->pushCriteria(new RequestCriteria($request));
+            $this->categoryRepository->pushCriteria(new ParentCriteria($request));
+            $this->categoryRepository->pushCriteria(new NearCriteria($request));
+            $this->categoryRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $categories = $this->categoryRepository->where('country_id',$id)->get();
+        return $this->sendResponse($categories->toArray(), 'Categories retrieved successfully');
+    }
+
     /**
      * Display the specified Category.
      * GET|HEAD /categories/{id}

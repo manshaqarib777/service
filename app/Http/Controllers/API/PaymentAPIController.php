@@ -62,6 +62,23 @@ class PaymentAPIController extends Controller
         return $this->sendResponse($payments->toArray(), 'Payments retrieved successfully');
     }
 
+
+
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->paymentRepository->pushCriteria(new RequestCriteria($request));
+            $this->paymentRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $payments = $this->paymentRepository->whereHas('user.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($payments->toArray(), 'Payments retrieved successfully');
+    }
+
     /**
      * Display the specified Payment.
      * GET|HEAD /payments/{id}

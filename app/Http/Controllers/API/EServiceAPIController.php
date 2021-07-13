@@ -77,26 +77,26 @@ class EServiceAPIController extends Controller
         return $this->sendResponse($eServices, 'E Services retrieved successfully');
     }
 
-    // public function filter(Request $request,$id)
-    // {
-    //     try {
-    //         $this->eServiceRepository->pushCriteria(new RequestCriteria($request));
-    //         $this->eServiceRepository->pushCriteria(new EServicesOfUserCriteria(auth()->id()));
-    //         $this->eServiceRepository->pushCriteria(new NearCriteria($request));
-    //     } catch (RepositoryException $e) {
-    //         return $this->sendError($e->getMessage());
-    //     }
-    //     $eServices = $this->eServiceRepository->where('country_id',$id)->get();
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->eServiceRepository->pushCriteria(new RequestCriteria($request));
+            $this->eServiceRepository->pushCriteria(new EServicesOfUserCriteria(auth()->id()));
+            $this->eServiceRepository->pushCriteria(new NearCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $eServices = $this->eServiceRepository->where('country_id',$id)->get();
 
-    //     $this->availableEServices($eServices);
-    //     $this->availableEProvider($request, $eServices);
-    //     $this->orderByRating($request, $eServices);
-    //     $this->limitOffset($request, $eServices);
-    //     $this->filterCollection($request, $eServices);
-    //     $eServices = array_values($eServices->toArray());
+        $this->availableEServices($eServices);
+        $this->availableEProvider($request, $eServices);
+        $this->orderByRating($request, $eServices);
+        $this->limitOffset($request, $eServices);
+        $this->filterCollection($request, $eServices);
+        $eServices = array_values($eServices->toArray());
 
-    //     return $this->sendResponse($eServices, 'E Services retrieved successfully');
-    // }
+        return $this->sendResponse($eServices, 'E Services retrieved successfully');
+    }
 
     /**
      * @param Collection $eServices

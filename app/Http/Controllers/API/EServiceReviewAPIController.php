@@ -57,6 +57,26 @@ class EServiceReviewAPIController extends Controller
         return $this->sendResponse($eServiceReviews->toArray(), 'E Service Reviews retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->eServiceReviewRepository->pushCriteria(new RequestCriteria($request));
+            if (auth()->check()) {
+                $this->eServiceReviewRepository->pushCriteria(new EServiceReviewsOfUserCriteria(auth()->id()));
+            }
+            $this->eServiceReviewRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $eServiceReviews = $this->eServiceReviewRepository->whereHas('eService.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        $this->filterCollection($request, $eServiceReviews);
+
+        return $this->sendResponse($eServiceReviews->toArray(), 'E Service Reviews retrieved successfully');
+    }
+
     /**
      * Display the specified EServiceReview.
      * GET|HEAD /eServiceReviews/{id}

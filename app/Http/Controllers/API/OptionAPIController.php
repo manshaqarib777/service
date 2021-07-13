@@ -62,6 +62,21 @@ class OptionAPIController extends Controller
         return $this->sendResponse($options->toArray(), 'Options retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try{
+            $this->optionRepository->pushCriteria(new RequestCriteria($request));
+            $this->optionRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $options = $this->optionRepository->whereHas('eService.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($options->toArray(), 'Options retrieved successfully');
+    }
+
     /**
      * Display the specified Option.
      * GET|HEAD /options/{id}

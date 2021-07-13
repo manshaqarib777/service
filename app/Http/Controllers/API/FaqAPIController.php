@@ -47,6 +47,20 @@ class FaqAPIController extends Controller
 
         return $this->sendResponse($faqs->toArray(), 'Faqs retrieved successfully');
     }
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->faqRepository->pushCriteria(new RequestCriteria($request));
+            $this->faqRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $faqs = $this->faqRepository->whereHas('faqCategory.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+        
+        return $this->sendResponse($faqs->toArray(), 'Faqs retrieved successfully');
+    }
 
     /**
      * Display the specified Faq.

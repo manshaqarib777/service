@@ -53,6 +53,19 @@ class AddressAPIController extends Controller
         return $this->sendResponse($addresses->toArray(), __('lang.saved_successfully', ['operator' => __('lang.address')]));
     }
 
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->addressRepository->pushCriteria(new RequestCriteria($request));
+            $this->addressRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $addresses = $this->addressRepository->where('country_id',$id)->get();
+
+        return $this->sendResponse($addresses->toArray(), __('lang.saved_successfully', ['operator' => __('lang.address')]));
+    }
+
     /**
      * Display the specified Address.
      * GET|HEAD /addresses/{id}

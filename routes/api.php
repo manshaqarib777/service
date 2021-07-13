@@ -40,20 +40,33 @@ Route::resource('e_provider_types', 'API\EProviderTypeAPIController');
 Route::resource('e_providers', 'API\EProviderAPIController');
 Route::get('e_providers/filter/{id}', 'API\EProviderAPIController@filter');
 Route::resource('availability_hours', 'API\AvailabilityHourAPIController');
+Route::get('availability_hours/filter/{id}', 'API\AvailabilityHourAPIController@filter');
+
 Route::resource('awards', 'API\AwardAPIController');
+Route::get('awards/filter/{id}', 'API\AwardAPIController@filter');
 Route::resource('experiences', 'API\ExperienceAPIController');
+Route::get('experiences/filter/{id}', 'API\ExperienceAPIController@filter');
+
 
 Route::resource('faq_categories', 'API\FaqCategoryAPIController');
+Route::get('faq_categories/filter/{id}', 'API\FaqCategoryAPIController@filter');
+
 Route::resource('faqs', 'API\FaqAPIController');
+Route::get('faqs/filter/{id}', 'API\FaqAPIController@filter');
+
 Route::resource('custom_pages', 'API\CustomPageAPIController');
 
 Route::resource('categories', 'API\CategoryAPIController');
+Route::get('categories/filter/{id}', 'API\CategoryAPIController@filter');
 
 Route::resource('e_services', 'API\EServiceAPIController');
-//Route::get('e_services/filter/{id}', 'API\EServiceAPIController@filter');
+Route::get('e_services/filter/{id}', 'API\EServiceAPIController@filter');
 Route::resource('galleries', 'API\GalleryAPIController');
+Route::get('galleries/filter/{id}', 'API\GalleryAPIController@filter');
+
 Route::get('e_service_reviews/{id}', 'API\EServiceReviewAPIController@show')->name('e_service_reviews.show');
 Route::get('e_service_reviews', 'API\EServiceReviewAPIController@index')->name('e_service_reviews.index');
+Route::get('e_service_reviews/filter/{id}', 'API\EServiceReviewAPIController@filter');
 
 Route::resource('currencies', 'API\CurrencyAPIController');
 Route::resource('slides', 'API\SlideAPIController')->except([
@@ -63,7 +76,11 @@ Route::resource('booking_statuses', 'API\BookingStatusAPIController')->except([
     'show'
 ]);
 Route::resource('option_groups', 'API\OptionGroupAPIController');
+Route::get('option_groups/filter/{id}', 'API\OptionGroupAPIController@filter');
+
 Route::resource('options', 'API\OptionAPIController');
+Route::get('options/filter/{id}', 'API\OptionAPIController@filter');
+
 Route::get('countries', 'API\UserAPIController@countries');
 
 Route::middleware('auth:api')->group(function () {
@@ -84,6 +101,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('payments/byMonth', 'API\PaymentAPIController@byMonth')->name('payments.byMonth');
     Route::resource('payments', 'API\PaymentAPIController')->except(['update']);
+    Route::get('payments/filter/{id}', 'API\PaymentAPIController@filter');
+    
     Route::resource('payment_methods', 'API\PaymentMethodAPIController')->only([
         'index'
     ]);
@@ -91,15 +110,23 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::resource('favorites', 'API\FavoriteAPIController');
+    Route::get('favorites/filter/{id}', 'API\FavoriteAPIController@filter');
+
     Route::resource('addresses', 'API\AddressAPIController');
+    Route::get('addresses/filter/{id}', 'API\AddressAPIController@filter');
+
 
     Route::get('notifications/count', 'API\NotificationAPIController@count');
     Route::resource('notifications', 'API\NotificationAPIController');
     Route::resource('bookings', 'API\BookingAPIController');
+    Route::get('bookings/filter/{id}', 'API\BookingAPIController@filter');
 
     Route::resource('earnings', 'API\EarningAPIController');
+    Route::get('earnings/filter/{id}', 'API\EarningAPIController@filter');
 
     Route::resource('e_provider_payouts', 'API\EProviderPayoutAPIController');
+    Route::get('e_provider_payouts/filter/{id}', 'API\EProviderPayoutAPIController@filter');
+    
 
     Route::resource('coupons', 'API\CouponAPIController')->except([
         'show'

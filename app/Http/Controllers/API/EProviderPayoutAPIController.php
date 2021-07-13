@@ -52,6 +52,21 @@ class EProviderPayoutAPIController extends Controller
         return $this->sendResponse($eProviderPayouts->toArray(), 'E Provider Payouts retrieved successfully');
     }
 
+    public function filter(Request $request,$id)
+    {
+        try {
+            $this->eProviderPayoutRepository->pushCriteria(new RequestCriteria($request));
+            $this->eProviderPayoutRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $eProviderPayouts = $this->eProviderPayoutRepository->whereHas('eProvider.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($eProviderPayouts->toArray(), 'E Provider Payouts retrieved successfully');
+    }
+
     /**
      * Display the specified EProviderPayout.
      * GET|HEAD /eProviderPayouts/{id}

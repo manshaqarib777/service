@@ -52,6 +52,21 @@ class AwardAPIController extends Controller
         return $this->sendResponse($awards->toArray(), 'Awards retrieved successfully');
     }
 
+    public function filter(Request $request,$id): JsonResponse
+    {
+        try {
+            $this->awardRepository->pushCriteria(new RequestCriteria($request));
+            $this->awardRepository->pushCriteria(new LimitOffsetCriteria($request));
+        } catch (RepositoryException $e) {
+            return $this->sendError($e->getMessage());
+        }
+        $awards = $this->awardRepository->whereHas('eProvider.country', function($q) use ($id){
+            return $q->where('countries.id',$id);
+        })->get();
+
+        return $this->sendResponse($awards->toArray(), 'Awards retrieved successfully');
+    }
+
     /**
      * Display the specified Award.
      * GET|HEAD /awards/{id}
