@@ -1,5 +1,12 @@
 @extends('layouts.app')
-
+@push('css_lib')
+    <link rel="stylesheet" href="{{asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2/css/select2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/summernote/summernote-bs4.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/dropzone/min/dropzone.min.css')}}">
+    <link rel="stylesheet" href="{{asset('vendor/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
+@endpush
 @section('content')
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -17,6 +24,17 @@
                         </li>
                         <li class="breadcrumb-item active">{{trans('lang.e_service_table')}}</li>
                     </ol>
+                    @php
+                        $countries=\App\Models\Country::all()->pluck('name','id');
+                    @endphp
+                    {!! Form::open(['method' => 'get']) !!}
+                    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
+                        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+                        <div class="col-9">
+                            {!! Form::select('country_id', $countries, request()->get('country_id'), ['class' => 'select2 form-control', 'onchange'=>"this.form.submit()"]) !!}
+                        </div>
+                    </div>
+                    {!! Form::close() !!}
                 </div><!-- /.col -->
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -51,3 +69,14 @@
     </div>
 @endsection
 
+@push('scripts_lib')
+    <script src="{{asset('vendor/select2/js/select2.full.min.js')}}"></script>
+    <script src="{{asset('vendor/summernote/summernote.min.js')}}"></script>
+    <script src="{{asset('vendor/dropzone/min/dropzone.min.js')}}"></script>
+    <script src="{{asset('vendor/moment/moment.min.js')}}"></script>
+    <script src="{{asset('vendor/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
+    <script type="text/javascript">
+        Dropzone.autoDiscover = false;
+        var dropzoneFields = [];
+    </script>
+@endpush

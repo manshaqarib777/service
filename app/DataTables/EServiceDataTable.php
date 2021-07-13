@@ -45,8 +45,8 @@ class EServiceDataTable extends DataTable
                 }
                 return $eService['name'];
             })
-            ->editColumn('country', function ($eProvider) {
-                return $eProvider['country']['name'];
+            ->editColumn('country', function ($eService) {
+                return $eService['country']['name'];
             })
             ->editColumn('price', function ($eService) {
                 if ($eService['price_unit'] == 'fixed' && !empty($eService['quantity_unit'])) {
@@ -105,6 +105,8 @@ class EServiceDataTable extends DataTable
             [
                 'data' => 'country',
                 'title' => trans('lang.country'),
+                'searchable' => false,
+                'orderable' => true
 
             ],
             [
@@ -173,6 +175,11 @@ class EServiceDataTable extends DataTable
         elseif(auth()->user()->hasRole('branch')){
             return $model->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        elseif(request()->get('country_id')){
+            return $model->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }
         else
