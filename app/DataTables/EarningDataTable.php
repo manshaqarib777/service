@@ -44,7 +44,7 @@ class EarningDataTable extends DataTable
             ->editColumn('total_earning', function ($earning) {
                 return getPriceColumn($earning, 'total_earning',$earning['eProvider']['country']['id']);
             })
-            ->editColumn('country', function ($earning) {
+            ->editColumn('eProvider.country.name', function ($earning) {
                 return $earning['eProvider']['country']['name'];
             })
             ->editColumn('admin_earning', function ($earning) {
@@ -77,7 +77,7 @@ class EarningDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -137,15 +137,20 @@ class EarningDataTable extends DataTable
     public function query(Earning $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("eProvider")->select('earnings.*');
+            return $model->newQuery()->with("eProvider.country")->select('earnings.*');
         } else if ((auth()->user()->hasRole('provider'))) {
             return $model->newQuery()->with("eProvider")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "earnings.e_provider_id")
                 ->where('e_provider_users.user_id', auth()->id())->select('earnings.*');
         }
         elseif(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        elseif(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }
     }

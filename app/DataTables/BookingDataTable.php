@@ -39,7 +39,7 @@ class BookingDataTable extends DataTable
             ->editColumn('id', function ($booking) {
                 return "#" . $booking->id;
             })
-            ->editColumn('country', function ($booking) {
+            ->editColumn('eService.country.name', function ($booking) {
                 return $booking['eService']['country']['name'];
             })
             ->editColumn('booking_at', function ($booking) {
@@ -101,7 +101,7 @@ class BookingDataTable extends DataTable
                 'title' => trans('lang.booking_id'),
             ],
             [
-                'data' => 'country',
+                'data' => 'eService.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -188,26 +188,31 @@ class BookingDataTable extends DataTable
     public function query(Booking $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->select('bookings.*');
+            return $model->newQuery()->with("user")->with('eService.country')->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->select('bookings.*');
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eService.country', function($q){
+            return $model->with('eService.country')->whereHas('eService.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with('eService.country')->whereHas('eService.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }         
         else if (auth()->user()->hasRole('provider')) {
             $eProviderId = DB::raw("json_extract(e_provider, '$.id')");
-            return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
+            return $model->newQuery()->with("user")->with('eService.country')->with('eService.country')->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
                 ->where('e_provider_users.user_id', auth()->id())
                 ->groupBy('bookings.id')
                 ->select('bookings.*');
 
         } else if (auth()->user()->hasRole('customer')) {
-            return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->where('bookings.user_id', auth()->id())
+            return $model->newQuery()->with("user")->with('eService.country')->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->where('bookings.user_id', auth()->id())
                 ->select('bookings.*')
                 ->groupBy('bookings.id');
         } else {
-            return $model->newQuery()->with("user")->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->select('bookings.*');
+            return $model->newQuery()->with("user")->with('eService.country')->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->select('bookings.*');
         }
     }
 

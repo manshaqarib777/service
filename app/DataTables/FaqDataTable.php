@@ -27,8 +27,11 @@ class FaqDataTable extends DataTable
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
-        ->editColumn('country', function ($faq) {
+        ->editColumn('faqCategory.country.name', function ($faq) {
             return $faq['faqCategory']['country']['name'];
+        })
+        ->editColumn('faqCategory.name', function ($faq) {
+            return $faq['faqCategory']['name'];
         })    
         ->editColumn('updated_at', function ($faq) {
                 return getDateColumn($faq, 'updated_at');
@@ -48,13 +51,18 @@ class FaqDataTable extends DataTable
     public function query(Faq $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('faqCategory.country', function($q){
+            return $model->with("faqCategory.country")->whereHas('faqCategory.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        elseif(request()->get('country_id')){
+            return $model->with("faqCategory.country")->whereHas('faqCategory.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }
         else
         {
-            return $model->newQuery()->with("faqCategory")->select('faqs.*');
+            return $model->newQuery()->with("faqCategory.country")->select('faqs.*');
         }
     }
 
@@ -97,12 +105,12 @@ class FaqDataTable extends DataTable
 
             ],
             [
-                'data' => 'faq_category.name',
+                'data' => 'faqCategory.name',
                 'title' => trans('lang.faq_faq_category_id'),
 
             ],
             [
-                'data' => 'country',
+                'data' => 'faqCategory.country.name',
                 'title' => trans('lang.country'),
 
             ],

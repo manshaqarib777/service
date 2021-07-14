@@ -30,7 +30,7 @@ class FaqCategoryDataTable extends DataTable
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
-        ->editColumn('country', function ($faq_category) {
+        ->editColumn('country.name', function ($faq_category) {
             return $faq_category['country']['name'];
         })
         ->editColumn('updated_at',function($faq_category){
@@ -53,13 +53,18 @@ class FaqCategoryDataTable extends DataTable
     public function query(FaqCategory $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }
         else
         {
-            return $model->newQuery();
+            return $model->newQuery()->with('country');
         }
     }
 
@@ -97,8 +102,11 @@ class FaqCategoryDataTable extends DataTable
             
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
+                'searchable'=>true,
+                'orderable'=>false,
+
             
             ],
             [

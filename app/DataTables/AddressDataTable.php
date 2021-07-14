@@ -35,13 +35,13 @@ class AddressDataTable extends DataTable
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
-            ->editColumn('country', function ($area) {
+            ->editColumn('country.name', function ($area) {
                 return $area['country']['name'];
             })
-            ->editColumn('state', function ($area) {
+            ->editColumn('state.name', function ($area) {
                 return $area['state']['name'];
             })
-            ->editColumn('area', function ($area) {
+            ->editColumn('area.name', function ($area) {
                 return $area['area']['name'];
             })
             ->editColumn('updated_at', function ($address) {
@@ -72,17 +72,17 @@ class AddressDataTable extends DataTable
 
             ],
             [
-                'data' => 'area',
+                'data' => 'area.name',
                 'title' => trans('lang.area'),
                 'searchable' => false,
             ],
             [
-                'data' => 'state',
+                'data' => 'state.name',
                 'title' => trans('lang.state'),
                 'searchable' => false,
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
                 'searchable' => false,
             ],
@@ -123,15 +123,20 @@ class AddressDataTable extends DataTable
     public function query(Address $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("user");
+            return $model->newQuery()->with("user",'country','state','area');
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with("user",'country','state','area')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with("user",'country','state','area')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         } 
         else {
-            return $model->newQuery()->with("user")->where('addresses.user_id', auth()->id());
+            return $model->newQuery()->with("user",'country','state','area')->where('addresses.user_id', auth()->id());
         }
     }
 

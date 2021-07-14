@@ -39,7 +39,7 @@ class AvailabilityHourDataTable extends DataTable
             ->editColumn('day', function ($availabilityHour) {
                 return translateDay($availabilityHour['day']);
             })
-            ->editColumn('country', function ($eProvider) {
+            ->editColumn('eProvider.country.name', function ($eProvider) {
                 return $eProvider['eProvider']['country']['name'];
             })
             ->editColumn('data', function ($availabilityHour) {
@@ -68,7 +68,7 @@ class AvailabilityHourDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -119,18 +119,23 @@ class AvailabilityHourDataTable extends DataTable
     public function query(AvailabilityHour $model)
     {
         if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("eProvider")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'availability_hours.e_provider_id')
+            return $model->newQuery()->with("eProvider.country")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'availability_hours.e_provider_id')
                 ->groupBy('availability_hours.id')
                 ->select('availability_hours.*')
                 ->where('e_provider_users.user_id', auth()->id());
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         } 
         else {
-            return $model->newQuery()->with("eProvider");
+            return $model->newQuery()->with("eProvider.country");
         }
     }
 

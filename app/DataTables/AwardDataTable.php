@@ -39,7 +39,7 @@ class AwardDataTable extends DataTable
             ->editColumn('updated_at', function ($award) {
                 return getDateColumn($award, 'updated_at');
             })
-            ->editColumn('country', function ($eProvider) {
+            ->editColumn('eProvider.country.name', function ($eProvider) {
                 return $eProvider['eProvider']['country']['name'];
             })
             ->editColumn('title', function ($award) {
@@ -71,7 +71,7 @@ class AwardDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -116,18 +116,23 @@ class AwardDataTable extends DataTable
     public function query(Award $model)
     {
         if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("eProvider")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'awards.e_provider_id')
+            return $model->newQuery()->with("eProvider.country")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'awards.e_provider_id')
                 ->groupBy('awards.id')
                 ->select('awards.*')
                 ->where('e_provider_users.user_id', auth()->id());
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         } 
         else {
-            return $model->newQuery()->with("eProvider");
+            return $model->newQuery()->with("eProvider.country");
         }
     }
 

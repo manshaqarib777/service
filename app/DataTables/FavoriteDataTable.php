@@ -38,7 +38,7 @@ class FavoriteDataTable extends DataTable
             ->editColumn('updated_at', function ($favorite) {
                 return getDateColumn($favorite, 'updated_at');
             })
-            ->editColumn('country', function ($faq) {
+            ->editColumn('eService.country.name', function ($faq) {
                 return $faq['eService']['country']['name'];
             })
             ->editColumn('options', function ($favorite) {
@@ -70,7 +70,7 @@ class FavoriteDataTable extends DataTable
                 'title' => trans('lang.e_service'),
             ],
             [
-                'data' => 'country',
+                'data' => 'eService.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -116,15 +116,20 @@ class FavoriteDataTable extends DataTable
     public function query(Favorite $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("eService")->with("user")->select("favorites.*");
+            return $model->newQuery()->with("eService.country")->with("user")->select("favorites.*");
         } 
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eService.country', function($q){
+            return $model->with("eService.country")->whereHas('eService.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
         }
+        else if(request()->get('country_id')){
+            return $model->with("eService.country")->whereHas('eService.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
         else {
-            return $model->newQuery()->with("eService")->with("user")
+            return $model->newQuery()->with("eService.country")->with("user")
                 ->join("e_services", "e_services.id", "=", "favorites.e_service_id")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "e_services.e_provider_id")
                 ->where('e_provider_users.user_id', auth()->id())

@@ -44,7 +44,7 @@ class EProviderDataTable extends DataTable
                 }
                 return $eProvider->name;
             })
-            ->editColumn('country', function ($eProvider) {
+            ->editColumn('country.name', function ($eProvider) {
                 return $eProvider['country']['name'];
             })
             ->editColumn('e_provider_type.name', function ($eProvider) {
@@ -91,7 +91,7 @@ class EProviderDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -174,9 +174,10 @@ class EProviderDataTable extends DataTable
     public function query(EProvider $model): \Illuminate\Database\Eloquent\Builder
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("eProviderType")->select("e_providers.*");
+            return $model->newQuery()->with("eProviderType")->with('country')->select("e_providers.*");
         } else if (auth()->user()->hasRole('provider')) {
             return $model->newQuery()
+                ->with('country')
                 ->with("eProviderType")
                 ->join("e_provider_users", "e_provider_id", "=", "e_providers.id")
                 ->where('e_provider_users.user_id', auth()->id())
@@ -184,12 +185,17 @@ class EProviderDataTable extends DataTable
                 ->select("e_providers.*");
         } 
         elseif(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
         }
+        elseif(request()->get('country_id')){
+            return $model->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
         else {
-            return $model->newQuery();
+            return $model->newQuery()->with('country');
         }
     }
 

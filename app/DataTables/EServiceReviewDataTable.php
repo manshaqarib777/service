@@ -38,7 +38,7 @@ class EServiceReviewDataTable extends DataTable
             ->editColumn('updated_at', function ($eServiceReview) {
                 return getDateColumn($eServiceReview, 'updated_at');
             })
-            ->editColumn('country', function ($eProvider) {
+            ->editColumn('eService.country.name', function ($eProvider) {
                 return $eProvider['eService']['country']['name'];
             })
             ->editColumn('user.name', function ($eServiceReview) {
@@ -67,7 +67,7 @@ class EServiceReviewDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eService.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -118,24 +118,29 @@ class EServiceReviewDataTable extends DataTable
     public function query(EServiceReview $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("user")->with("eService");
+            return $model->newQuery()->with("user",'eService.country');
         } else if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("user")->with("eService")->join("e_services", "e_services.id", "=", "e_service_reviews.e_service_id")
+            return $model->newQuery()->with("user",'eService.country')->join("e_services", "e_services.id", "=", "e_service_reviews.e_service_id")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "e_services.e_provider_id")
                 ->where('e_provider_users.user_id', auth()->id())
                 ->groupBy('e_service_reviews.id')
                 ->select('e_service_reviews.*');
         } else if (auth()->user()->hasRole('customer')) {
-            return $model->newQuery()->where('e_service_reviews.user_id', auth()->id())
+            return $model->newQuery()->with("user",'eService.country')->where('e_service_reviews.user_id', auth()->id())
                 ->select('e_service_reviews.*');
         } 
         elseif(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eService.country', function($q){
+            return $model->with("user",'eService.country')->whereHas('eService.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
         }
+        elseif(request()->get('country_id')){
+            return $model->with("user",'eService.country')->whereHas('eService.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
         else {
-            return $model->newQuery()->with("user")->with("eService");
+            return $model->newQuery()->with("user",'eService.country');
         }
 
     }

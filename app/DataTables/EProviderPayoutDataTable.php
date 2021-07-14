@@ -44,7 +44,7 @@ class EProviderPayoutDataTable extends DataTable
             ->editColumn('paid_date', function ($eProviderPayout) {
                 return getDateColumn($eProviderPayout, "paid_date");
             })
-            ->editColumn('country', function ($eProviderPayout) {
+            ->editColumn('eProvider.country.name', function ($eProviderPayout) {
                 return $eProviderPayout['eProvider']['country']['name'];
             })
             ->editColumn('amount', function ($eproviders_payout) {
@@ -70,7 +70,7 @@ class EProviderPayoutDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -121,13 +121,18 @@ class EProviderPayoutDataTable extends DataTable
     public function query(EProviderPayout $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         }
         else
         {
-            return $model->newQuery()->with("eProvider")->select("$model->table.*");
+            return $model->newQuery()->with("eProvider.country")->select("$model->table.*");
         }
     }
 

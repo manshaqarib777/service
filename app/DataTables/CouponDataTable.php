@@ -43,7 +43,7 @@ class CouponDataTable extends DataTable
                 return getStripedHtmlColumn($coupon, 'description');
             })
             
-            ->editColumn('country', function ($coupon) {
+            ->editColumn('country.name', function ($coupon) {
                 return $coupon['country']['name'];
             })
             ->editColumn('expires_at', function ($coupon) {
@@ -78,9 +78,10 @@ class CouponDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
-
+                'searchable'=>true,
+                'orderable'=>false,
             ],
             [
                 'data' => 'discount',
@@ -133,14 +134,14 @@ class CouponDataTable extends DataTable
     public function query(Coupon $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery();
+            return $model->newQuery()->with('country');
         } elseif (auth()->user()->hasRole('provider')) {
-            $eProviders = $model->join("discountables", "discountables.coupon_id", "=", "coupons.id")
+            $eProviders = $model->with('country')->join("discountables", "discountables.coupon_id", "=", "coupons.id")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "discountables.discountable_id")
                 ->where('discountable_type', 'App\\Models\\EProvider')
                 ->where("e_provider_users.user_id", auth()->id())->select("coupons.*");
 
-            return $model->join("discountables", "discountables.coupon_id", "=", "coupons.id")
+            return $model->with('country')->join("discountables", "discountables.coupon_id", "=", "coupons.id")
                 ->join("e_services", "e_services.id", "=", "discountables.discountable_id")
                 ->where('discountable_type', 'App\\Models\\EService')
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "e_services.e_provider_id")
@@ -149,12 +150,17 @@ class CouponDataTable extends DataTable
                 ->union($eProviders);
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
         }
+        else if(request()->get('country_id')){
+            return $model->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
         else {
-            $model->newQuery();
+            $model->newQuery()->with('country');
         }
 
     }

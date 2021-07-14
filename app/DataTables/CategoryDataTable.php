@@ -33,17 +33,13 @@ class CategoryDataTable extends DataTable
      */
     public function dataTable($query)
     {
-        if (auth()->user()->hasRole('client'))
-            $query = $query->where('user_id', auth()->id());
-        if (auth()->user()->hasRole('branch'))
-            $query = $query->where('country_id', get_role_country_id('branch'));
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
             ->editColumn('image', function ($category) {
                 return getMediaColumn($category, 'image');
             })
-            ->editColumn('country', function ($category) {
+            ->editColumn('country.name', function ($category) {
                 return $category['country']['name'];
             })
             ->editColumn('description', function ($category) {
@@ -90,7 +86,7 @@ class CategoryDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -149,12 +145,18 @@ class CategoryDataTable extends DataTable
     public function query(Category $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with("parentCategory",'country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
-        }else
+        }
+        elseif(request()->get('country_id')){
+            return $model->with("parentCategory",'country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
+        else
         {
-            return $model->newQuery()->with("parentCategory")->select("categories.*");
+            return $model->newQuery()->with("parentCategory",'country')->select("categories.*");
         }
     }
 

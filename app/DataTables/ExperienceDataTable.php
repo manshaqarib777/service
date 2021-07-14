@@ -41,7 +41,7 @@ class ExperienceDataTable extends DataTable
             ->editColumn('title', function ($experience) {
                 return $experience->title;
             })
-            ->editColumn('country', function ($eProvider) {
+            ->editColumn('eProvider.country.name', function ($eProvider) {
                 return $eProvider['eProvider']['country']['name'];
             })
             ->editColumn('description', function ($experience) {
@@ -70,7 +70,7 @@ class ExperienceDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -115,18 +115,23 @@ class ExperienceDataTable extends DataTable
     public function query(Experience $model)
     {
         if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("eProvider")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'experiences.e_provider_id')
+            return $model->newQuery()->with("eProvider.country")->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'experiences.e_provider_id')
                 ->groupBy('experiences.id')
                 ->select('experiences.*')
                 ->where('e_provider_users.user_id', auth()->id());
         }
         elseif(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        elseif(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         } 
         else {
-            return $model->newQuery()->with("eProvider");
+            return $model->newQuery()->with("eProvider.country");
         }
     }
 
