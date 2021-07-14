@@ -24,7 +24,7 @@
                         </li>
                         <li class="breadcrumb-item active">{{trans('lang.e_service_table')}}</li>
                     </ol>
-                    @php
+                    {{-- @php
                         $countries=\App\Models\Country::all()->pluck('name','id');
                     @endphp
                     {!! Form::open(['method' => 'get']) !!}
@@ -34,7 +34,7 @@
                             {!! Form::select('country_id', $countries, request()->get('country_id'), ['class' => 'select2 form-control', 'onchange'=>"this.form.submit()"]) !!}
                         </div>
                     </div>
-                    {!! Form::close() !!}
+                    {!! Form::close() !!} --}}
                 </div><!-- /.col -->
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->

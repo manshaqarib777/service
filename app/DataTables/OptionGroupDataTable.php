@@ -42,7 +42,7 @@ class OptionGroupDataTable extends DataTable
             ->editColumn('name', function ($optionGroup) {
                 return $optionGroup->name;
             })
-            ->editColumn('country', function ($optionGroup) {
+            ->editColumn('country.name', function ($optionGroup) {
                 return $optionGroup['country']['name'];
             })
             ->editColumn('updated_at', function ($optionGroup) {
@@ -71,7 +71,7 @@ class OptionGroupDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -111,13 +111,18 @@ class OptionGroupDataTable extends DataTable
     public function query(OptionGroup $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("option_groups.*");
+        }
+        else if(request()->get('country_id')){
+            return $model->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            })->select("option_groups.*");
         }
         else
         {
-            return $model->newQuery();
+            return $model->with('country')->newQuery()->select("option_groups.*");
         }
     }
 

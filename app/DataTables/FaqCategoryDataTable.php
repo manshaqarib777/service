@@ -55,16 +55,16 @@ class FaqCategoryDataTable extends DataTable
         if(auth()->user()->hasRole('branch')){
             return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("faq_categories.*");
         }
         else if(request()->get('country_id')){
             return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',request()->get('country_id'));
-            });
+            })->select("faq_categories.*");
         }
         else
         {
-            return $model->newQuery()->with('country');
+            return $model->newQuery()->with('country')->select("faq_categories.*");
         }
     }
 
@@ -104,10 +104,6 @@ class FaqCategoryDataTable extends DataTable
             [
                 'data' => 'country.name',
                 'title' => trans('lang.country'),
-                'searchable'=>true,
-                'orderable'=>false,
-
-            
             ],
             [
             'data' => 'updated_at',

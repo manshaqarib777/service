@@ -80,8 +80,6 @@ class CouponDataTable extends DataTable
             [
                 'data' => 'country.name',
                 'title' => trans('lang.country'),
-                'searchable'=>true,
-                'orderable'=>false,
             ],
             [
                 'data' => 'discount',
@@ -134,7 +132,7 @@ class CouponDataTable extends DataTable
     public function query(Coupon $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with('country');
+            return $model->newQuery()->with('country')->select("coupons.*");
         } elseif (auth()->user()->hasRole('provider')) {
             $eProviders = $model->with('country')->join("discountables", "discountables.coupon_id", "=", "coupons.id")
                 ->join("e_provider_users", "e_provider_users.e_provider_id", "=", "discountables.discountable_id")
@@ -152,15 +150,15 @@ class CouponDataTable extends DataTable
         else if(auth()->user()->hasRole('branch')){
             return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("coupons.*");
         }
         else if(request()->get('country_id')){
             return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',request()->get('country_id'));
-            });
+            })->select("coupons.*");
         }
         else {
-            $model->newQuery()->with('country');
+            $model->newQuery()->with('country')->select("coupons.*");
         }
 
     }

@@ -88,7 +88,7 @@ class RequestedEProviderDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -167,16 +167,22 @@ class RequestedEProviderDataTable extends DataTable
     public function query(EProvider $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("eProviderType")->where('e_providers.accepted', '0')->select("e_providers.*");
+            return $model->newQuery()->with("country")->with("eProviderType")->where('e_providers.accepted', '0')->select("e_providers.*");
         } 
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with("country")->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("e_providers.*");
+        }
+        else if(request()->get('country_id')){
+            return $model->with("country")->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            })->select("e_providers.*");
         }
         else {
             return $model->newQuery()
                 ->with("eProviderType")
+                ->with("country")
                 ->join("e_provider_users", "e_provider_id", "=", "e_providers.id")
                 ->where('e_provider_users.user_id', auth()->id())
                 ->where('e_providers.accepted', '0')

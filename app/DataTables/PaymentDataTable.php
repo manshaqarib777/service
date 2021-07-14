@@ -41,7 +41,7 @@ class PaymentDataTable extends DataTable
             })->editColumn('amount', function ($payment) {
                 return getPriceColumn($payment, 'amount',$payment->user->country_id);
             })
-            ->editColumn('country', function ($payment) {
+            ->editColumn('user.country.name', function ($payment) {
                 return $payment['user']['country']['name'];
             })
             ->editColumn('payment_method.name', function ($payment) {
@@ -78,7 +78,7 @@ class PaymentDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'user.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -130,14 +130,14 @@ class PaymentDataTable extends DataTable
     public function query(Payment $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("user")
+            return $model->newQuery()->with("user.country")
                 ->with("paymentMethod")
                 ->with("paymentStatus")
                 ->select('payments.*')
                 ->orderBy('id', 'desc');
         } else if (auth()->user()->hasRole('provider')) {
             $eProviderId = DB::raw("json_extract(e_provider, '$.id')");
-            return $model->newQuery()->with("user")
+            return $model->newQuery()->with("user.country")
                 ->with("paymentMethod")
                 ->with("paymentStatus")
                 ->join("bookings", "payments.id", "=", "bookings.payment_id")
@@ -148,12 +148,17 @@ class PaymentDataTable extends DataTable
                 ->select('payments.*');
         } 
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('user.country', function($q){
+            return $model->with("user.country")->whereHas('user.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
             });
         }
+        else if(request()->get('country_id')){
+            return $model->with("user.country")->whereHas('user.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            });
+        }
         else {
-            return $model->newQuery()->with("user")
+            return $model->with("user.country")->newQuery()->with("user.country")
                 ->with("paymentMethod")
                 ->with("paymentStatus")
                 ->where('payments.user_id', auth()->id())

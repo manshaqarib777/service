@@ -179,12 +179,12 @@ class EServiceDataTable extends DataTable
         elseif(auth()->user()->hasRole('branch')){
             return $model->with("eProvider","country")->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("e_services.*");
         }
         elseif(request()->get('country_id')){
             return $model->with("eProvider","country")->whereHas('country', function($q){
                 return $q->where('countries.id',request()->get('country_id'));
-            });
+            })->select("e_services.*");
         }
         else
         {

@@ -41,7 +41,7 @@ class OptionDataTable extends DataTable
             ->editColumn('image', function ($option) {
                 return getMediaColumn($option, 'image');
             })
-            ->editColumn('country', function ($option) {
+            ->editColumn('eService.country.name', function ($option) {
                 return $option['eService']['country']['name'];
             })
             ->editColumn('price', function ($option) {
@@ -79,7 +79,7 @@ class OptionDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'eService.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -141,9 +141,9 @@ class OptionDataTable extends DataTable
     public function query(Option $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("eService")->with("optionGroup")->with('eService.eProvider');
+            return $model->newQuery()->with("eService.country")->with("optionGroup")->with('eService.eProvider')->select("options.*");
         } else if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("eService")->with("optionGroup")->with('eService.eProvider')
+            return $model->newQuery()->with("eService.country")->with("optionGroup")->with('eService.eProvider')
                 ->join("e_services", "options.e_service_id", "=", "e_services.id")
                 ->join("e_provider_users", "e_services.e_provider_id", "=", "e_provider_users.e_provider_id")
                 ->where('e_provider_users.user_id', auth()->id())
@@ -151,12 +151,17 @@ class OptionDataTable extends DataTable
                 ->select('options.*');
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eService.country', function($q){
+            return $model->with("eService.country")->whereHas('eService.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("options.*");
+        }
+        else if(request()->get('country_id')){
+            return $model->with("eService.country")->whereHas('eService.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            })->select("options.*");
         } 
         else {
-            return $model->newQuery()->with("eService")->with("optionGroup")->with('eService.eProvider');
+            return $model->newQuery()->with("eService.country")->with("optionGroup")->with('eService.eProvider')->select("options.*");
         }
     }
 

@@ -41,7 +41,7 @@ class GalleryDataTable extends DataTable
             ->editColumn('description', function ($gallery) {
                 return getStripedHtmlColumn($gallery, 'description');
             })
-            ->editColumn('country', function ($gallery) {
+            ->editColumn('eProvider.country.name', function ($gallery) {
                 return $gallery['eProvider']['country']['name'];
             })
             ->editColumn('e_provider.name', function ($gallery) {
@@ -75,7 +75,7 @@ class GalleryDataTable extends DataTable
                 'searchable' => false, 'orderable' => false, 'exportable' => false, 'printable' => false,
             ],
             [
-                'data' => 'country',
+                'data' => 'eProvider.country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -115,19 +115,24 @@ class GalleryDataTable extends DataTable
     public function query(Gallery $model)
     {
         if (auth()->user()->hasRole('provider')) {
-            return $model->newQuery()->with("eProvider")
+            return $model->newQuery()->with("eProvider.country")
                 ->join('e_provider_users', 'e_provider_users.e_provider_id', '=', 'galleries.e_provider_id')
                 ->groupBy('galleries.id')
                 ->select('galleries.*')
                 ->where('e_provider_users.user_id', auth()->id());
         }
         else if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('eProvider.country', function($q){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        else if(request()->get('country_id')){
+            return $model->with("eProvider.country")->whereHas('eProvider.country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
             });
         } 
         else {
-            return $model->newQuery()->with("eProvider")->select("galleries.*");
+            return $model->newQuery()->with("eProvider.country")->select("galleries.*");
         }
     }
 

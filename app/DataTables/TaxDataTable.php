@@ -42,7 +42,7 @@ class TaxDataTable extends DataTable
             ->editColumn('updated_at', function ($tax) {
                 return getDateColumn($tax, 'updated_at');
             })
-            ->editColumn('country', function ($tax) {
+            ->editColumn('country.name', function ($tax) {
                 return $tax['country']['name'];
             })
             ->editColumn('value', function ($tax) {
@@ -75,7 +75,7 @@ class TaxDataTable extends DataTable
 
             ],
             [
-                'data' => 'country',
+                'data' => 'country.name',
                 'title' => trans('lang.country'),
 
             ],
@@ -120,13 +120,18 @@ class TaxDataTable extends DataTable
     public function query(Tax $model)
     {
         if(auth()->user()->hasRole('branch')){
-            return $model->whereHas('country', function($q){
+            return $model->with('country')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("taxes.*");
+        }
+        if(request()->get('country_id')){
+            return $model->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',request()->get('country_id'));
+            })->select("taxes.*");
         }
         else
         {
-            return $model->newQuery();
+            return $model->newQuery()->with('country')->select("taxes.*");
         }
     }
 

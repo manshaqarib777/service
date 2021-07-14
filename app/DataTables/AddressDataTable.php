@@ -123,20 +123,20 @@ class AddressDataTable extends DataTable
     public function query(Address $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("user",'country','state','area');
+            return $model->newQuery()->with("user",'country','state','area')->select("addresses.*");
         }
         else if(auth()->user()->hasRole('branch')){
             return $model->with("user",'country','state','area')->whereHas('country', function($q){
                 return $q->where('countries.id',get_role_country_id('branch'));
-            });
+            })->select("addresses.*");
         }
         else if(request()->get('country_id')){
             return $model->with("user",'country','state','area')->whereHas('country', function($q){
                 return $q->where('countries.id',request()->get('country_id'));
-            });
+            })->select("addresses.*");
         } 
         else {
-            return $model->newQuery()->with("user",'country','state','area')->where('addresses.user_id', auth()->id());
+            return $model->newQuery()->with("user",'country','state','area')->where('addresses.user_id', auth()->id())->select("addresses.*");
         }
     }
 

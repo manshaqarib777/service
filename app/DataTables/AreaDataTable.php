@@ -50,7 +50,7 @@ class AreaDataTable extends DataTable
      */
     public function query(Area $model)
     {
-        return $model->newQuery()->with('state','country');
+        return $model->newQuery()->with('state','country')->select("areas.*");
     }
 
     /**
@@ -84,17 +84,14 @@ class AreaDataTable extends DataTable
             [
                 'data' => 'name',
                 'title' => trans('lang.area_name'),
-                'searchable' => true,
             ],
             [
                 'data' => 'state.name',
                 'title' => trans('lang.state'),
-                'searchable' => false,
             ],
             [
                 'data' => 'country.name',
                 'title' => trans('lang.country'),
-                'searchable' => false,
             ],
             [
                 'data' => 'updated_at',
