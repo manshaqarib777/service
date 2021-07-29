@@ -38,6 +38,9 @@ class SlideDataTable extends DataTable
             ->editColumn('text', function ($slide) {
                 return $slide->text;
             })
+            ->editColumn('country.name', function ($tax) {
+                return $tax['country']['name'];
+            })
             ->editColumn('button', function ($slide) {
                 return $slide->button;
             })
@@ -90,6 +93,11 @@ class SlideDataTable extends DataTable
             [
                 'data' => 'text',
                 'title' => trans('lang.slide_text'),
+
+            ],
+            [
+                'data' => 'country.name',
+                'title' => trans('lang.country'),
 
             ],
             [

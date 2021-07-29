@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use App\Repositories\CountryRepository;
 class SlideController extends Controller
 {
     /** @var  SlideRepository */
@@ -50,10 +50,12 @@ class SlideController extends Controller
      * @var EProviderRepository
      */
     private $eProviderRepository;
+    private $countryRepository;
 
     public function __construct(SlideRepository $slideRepo, CustomFieldRepository $customFieldRepo, UploadRepository $uploadRepo
         , EServiceRepository $eServiceRepo
-        , EProviderRepository $eProviderRepo)
+        , EProviderRepository $eProviderRepo
+        ,CountryRepository $countryRepository)
     {
         parent::__construct();
         $this->slideRepository = $slideRepo;
@@ -61,6 +63,7 @@ class SlideController extends Controller
         $this->uploadRepository = $uploadRepo;
         $this->eServiceRepository = $eServiceRepo;
         $this->eProviderRepository = $eProviderRepo;
+        $this->countryRepository = $countryRepository;
     }
 
     /**
@@ -91,7 +94,8 @@ class SlideController extends Controller
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->slideRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('slides.create')->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('slides.create')->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with('countries',$countries);
     }
 
     /**
@@ -145,7 +149,8 @@ class SlideController extends Controller
         if ($hasCustomField) {
             $html = generateCustomField($customFields, $customFieldsValues);
         }
-        return view('slides.edit')->with('slide', $slide)->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider);
+        $countries = $this->countryRepository->all()->pluck('name','id');
+        return view('slides.edit')->with('slide', $slide)->with("customFields", isset($html) ? $html : false)->with("eService", $eService)->with("eProvider", $eProvider)->with('countries',$countries);
     }
 
     /**

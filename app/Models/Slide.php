@@ -76,7 +76,8 @@ class Slide extends Model implements HasMedia
         'image_fit',
         'e_service_id',
         'e_provider_id',
-        'enabled'
+        'enabled',
+        'country_id'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -188,6 +189,10 @@ class Slide extends Model implements HasMedia
     public function getHasMediaAttribute()
     {
         return $this->hasMedia('image');
+    }
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\Country::class, 'country_id', 'id');
     }
 
 }
