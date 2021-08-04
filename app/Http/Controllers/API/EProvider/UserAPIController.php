@@ -92,7 +92,9 @@ class UserAPIController extends Controller
             $user->name = $request->input('name');
             $user->email = $request->input('email');
             $user->phone_number = $request->input('phone_number');
-            $user->phone_verified_at = $request->input('phone_number');
+            $user->country_id = $request->input('country_id');
+            $user->state_id =  $request->input('state_id');
+            $user->area_id =  $request->input('area_id');
             $user->device_token = $request->input('device_token', '');
             $user->password = Hash::make($request->input('password'));
             $user->api_token = Str::random(60);
