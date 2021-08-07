@@ -242,4 +242,14 @@ class UserAPIController extends Controller
 
         return $this->sendResponse($countries, 'Countries retrieved successfully');
     }
+    function languages(Request $request)
+    {
+        $languages = getAvailableLanguages();
+
+        if (!$languages) {
+            return $this->sendError('Languages not found', 401);
+        }
+
+        return $this->sendResponse($languages, 'Languages retrieved successfully');
+    }
 }
