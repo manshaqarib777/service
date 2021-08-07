@@ -87,12 +87,14 @@ class UserAPIController extends Controller
             $user->name = $request->input('name');
             $user->email = $request->input('email');
             $user->phone_number = $request->input('phone_number');
-            $user->phone_verified_at = $request->input('phone_number');
+            $user->country_id = $request->input('country_id');
+            $user->state_id =  $request->input('state_id');
+            $user->area_id =  $request->input('area_id');
             $user->device_token = $request->input('device_token', '');
             $user->password = Hash::make($request->input('password'));
             $user->api_token = Str::random(60);
             $user->save();
-
+            
             $defaultRoles = $this->roleRepository->findByField('default', '1');
             $defaultRoles = $defaultRoles->pluck('name')->toArray();
             $user->assignRole($defaultRoles);
@@ -104,6 +106,7 @@ class UserAPIController extends Controller
                     ->updateOrCreate(['custom_field_id' => $value['custom_field_id']], $value);
             }
         } catch (ValidationException $e) {
+                       
             return $this->sendError(array_values($e->errors()));
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), 200);
