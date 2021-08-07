@@ -1,14 +1,18 @@
 <div style="flex: 50%;max-width: 50%;padding: 0 4px;" class="column">
     <!-- Question Field -->
-    <div class="form-group row">
-        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
-        <div class="col-9">
-            {!! Form::select('country_id',
-            $countries
-            ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
-            <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+    @if(!auth()->user()->hasRole('branch') && !auth()->user()->hasRole('provider'))
+        <div class="form-group row">
+            {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+            <div class="col-9">
+                {!! Form::select('country_id',
+                $countries
+                ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
+                <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+            </div>
         </div>
-    </div>
+    @else
+        {!! Form::hidden('country_id', auth()->user()->country_id,  ['class' => 'form-control','placeholder'=>  trans("lang.user_name_placeholder"),'id'=>'change-country']) !!}
+    @endif
     <div class="form-group row">
         {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
         <div class="col-9">

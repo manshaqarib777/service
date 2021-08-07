@@ -34,7 +34,7 @@ class CreateMarketRequest extends FormRequest
     {
         if (auth()->user()->hasRole('admin')) {
             return Market::$adminRules;
-        } elseif (auth()->user()->hasAnyRole(['manager', 'client','branch'])) {
+        } elseif (auth()->user()->hasAnyRole(['provider', 'client','branch'])) {
             return Market::$managerRules;
         }
     }

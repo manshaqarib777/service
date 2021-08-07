@@ -54,7 +54,9 @@ class Booking extends Model
     public static $rules = [
         'user_id' => 'required|exists:users,id',
         'booking_status_id' => 'required|exists:booking_statuses,id',
-        'payment_id' => 'nullable|exists:payments,id'
+        'payment_id' => 'nullable|exists:payments,id',
+        'delivery_time_id' => 'required'
+
     ];
     public $table = 'bookings';
     public $fillable = [
@@ -73,7 +75,10 @@ class Booking extends Model
         'ends_at',
         'hint',
         'cancel',
-        'e_service_id'
+        'e_service_id',
+        'delivery_time_id'
+
+
 
     ];
     /**

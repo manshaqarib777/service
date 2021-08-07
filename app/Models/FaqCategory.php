@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Traits\HasTranslations;
 
 use Eloquent as Model;
 
@@ -16,7 +17,11 @@ class FaqCategory extends Model
 {
 
     public $table = 'faq_categories';
-    
+    use HasTranslations;
+
+    public $translatable = [
+        'name',
+    ];   
 
 
     public $fillable = [

@@ -1,28 +1,38 @@
 @if($customFields)
     <h5 class="col-12 pb-4">{!! trans('lang.main_fields') !!}</h5>
 @endif
-<div class="d-flex flex-column col-sm-12 col-md-6">
+<div style="flex: 50%;max-width: 50%;padding: 0 4px;" class="column">
     <!-- Name Field -->
-    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-        {!! Form::label('name', trans("lang.user_name"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
-        <div class="col-md-9">
+    <div class="form-group row ">
+        {!! Form::label('name', trans("lang.user_name"), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
             {!! Form::text('name', null,  ['class' => 'form-control','placeholder'=>  trans("lang.user_name_placeholder")]) !!}
             <div class="form-text text-muted">
                 {{ trans("lang.user_name_help") }}
             </div>
         </div>
     </div>
-
-    <div class="form-group row">
-        {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+    <div class="form-group row ">
+        {!! Form::label('language', trans("lang.app_setting_language"),['class' => 'col-3 control-label text-right']) !!}
         <div class="col-9">
-            {!! Form::select('country_id',
-            $countries
-            ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
-            <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+            {!! Form::select('language', getAvailableLanguages(), null , ['class' => 'select2 form-control']) !!}
+            <div class="form-text text-muted">{{ trans("lang.app_setting_language_help") }}</div>
         </div>
     </div>
 
+    @if(!auth()->user()->hasRole('branch') && !auth()->user()->hasRole('provider'))
+        <div class="form-group row">
+            {!! Form::label('country_id', trans('lang.app_country'), ['class' => 'col-3 control-label text-right']) !!}
+            <div class="col-9">
+                {!! Form::select('country_id',
+                $countries
+                ,null, ['class' => 'select-country form-control','id'=>'change-country']) !!}
+                <div class="form-text text-muted">{{ trans("lang.app_setting_default_country_help") }}</div>
+            </div>
+        </div>
+    @else
+        {!! Form::hidden('country_id', auth()->user()->country_id,  ['class' => 'form-control','placeholder'=>  trans("lang.user_name_placeholder"),'id'=>'change-country']) !!}
+    @endif
     <div class="form-group row">
         {!! Form::label('state_id', trans('lang.app_state'), ['class' => 'col-3 control-label text-right']) !!}
         <div class="col-9">
@@ -44,9 +54,9 @@
     </div>
 
     <!-- Email Field -->
-    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-        {!! Form::label('email', trans("lang.user_email"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
-        <div class="col-md-9">
+    <div class="form-group row ">
+        {!! Form::label('email', trans("lang.user_email"), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
             {!! Form::text('email', null,  ['class' => 'form-control','placeholder'=>  trans("lang.user_email_placeholder")]) !!}
             <div class="form-text text-muted">
                 {{ trans("lang.user_email_help") }}
@@ -54,7 +64,16 @@
         </div>
     </div>
 
-    <!-- Phone Number Field -->
+    <!-- Password Field -->
+    <div class="form-group row ">
+        {!! Form::label('password', trans("lang.user_password"), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::password('password', ['class' => 'form-control','placeholder'=>  trans("lang.user_password_placeholder")]) !!}
+            <div class="form-text text-muted">
+                {{ trans("lang.user_password_help") }}
+            </div>
+        </div>
+    </div>
     <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
         {!! Form::label('phone_number', trans("lang.user_phone_number"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
         <div class="col-md-9">
@@ -64,23 +83,12 @@
             </div>
         </div>
     </div>
-
-    <!-- Password Field -->
-    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-        {!! Form::label('password', trans("lang.user_password"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
-        <div class="col-md-9">
-            {!! Form::password('password', ['class' => 'form-control','placeholder'=>  trans("lang.user_password_placeholder")]) !!}
-            <div class="form-text text-muted">
-                {{ trans("lang.user_password_help") }}
-            </div>
-        </div>
-    </div>
 </div>
-<div class="d-flex flex-column col-sm-12 col-md-6">
+<div style="flex: 50%;max-width: 50%;padding: 0 4px;" class="column">
     <!-- $FIELD_NAME_TITLE$ Field -->
-    <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-        {!! Form::label('avatar', trans("lang.user_avatar"), ['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
-        <div class="col-md-9">
+    <div class="form-group row">
+        {!! Form::label('avatar', trans("lang.user_avatar"), ['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
             <div style="width: 100%" class="dropzone avatar" id="avatar" data-field="avatar">
                 <input type="hidden" name="avatar">
             </div>
@@ -130,21 +138,20 @@
                         'avatar', '{!! isset($user) ? $user->id : 0 !!}', '{!! url("uplaods/clear") !!}', '{!! csrf_token() !!}'
                     );
                 }
-        });
+            });
         dz_user_avatar[0].mockFile = user_avatar;
         dropzoneFields['avatar'] = dz_user_avatar;
     </script>
-    @endprepend
-    @can('permissions.index')
-    <!-- Roles Field -->
-        <div class="form-group align-items-baseline d-flex flex-column flex-md-row">
-            {!! Form::label('roles[]', trans("lang.user_role_id"),['class' => 'col-md-3 control-label text-md-right mx-1']) !!}
-            <div class="col-md-9">
-                {!! Form::select('roles[]', $role, $rolesSelected, ['class' => 'select2 form-control' , 'multiple'=>'multiple']) !!}
-                <div class="form-text text-muted">{{ trans("lang.user_role_id_help") }}</div>
-            </div>
+@endprepend
+
+<!-- Roles Field -->
+    <div class="form-group row ">
+        {!! Form::label('roles[]', trans("lang.user_role_id"),['class' => 'col-3 control-label text-right']) !!}
+        <div class="col-9">
+            {!! Form::select('roles[]', $role, $rolesSelected, ['class' => 'select2 form-control' , 'multiple'=>'multiple']) !!}
+            <div class="form-text text-muted">{{ trans("lang.user_role_id_help") }}</div>
         </div>
-    @endcan
+    </div>
 
 </div>
 @if($customFields)
@@ -156,10 +163,9 @@
     </div>
 @endif
 <!-- Submit Field -->
-<div class="form-group col-12 d-flex flex-column flex-md-row justify-content-md-end justify-content-sm-center border-top pt-4">
-    <button type="submit" class="btn bg-{{setting('theme_color')}} mx-md-3 my-lg-0 my-xl-0 my-md-0 my-2">
-        <i class="fas fa-save"></i> {{trans('lang.save')}} {{trans('lang.user')}}</button>
-    <a href="{!! route('users.index') !!}" class="btn btn-default"><i class="fas fa-undo"></i> {{trans('lang.cancel')}}</a>
+<div class="form-group col-12 text-right">
+    <button type="submit" class="btn btn-{{setting('theme_color')}}"><i class="fa fa-save"></i> {{trans('lang.save')}} {{trans('lang.user')}}</button>
+    <a href="{!! route('users.index') !!}" class="btn btn-default"><i class="fa fa-undo"></i> {{trans('lang.cancel')}}</a>
 </div>
 
 @push('scripts_lib')
@@ -208,10 +214,10 @@
 
                 });
             });
-            @if(!isset($user))
-                $('.select-country').trigger('change');
-                $('.select-state').trigger('change');                    
-            @endif
+                @if(!isset($user) || auth()->user()->hasRole('branch'))
+                    $('#change-country').trigger('change');
+                    $('#change-state').trigger('change');                    
+                @endif
         });
     </script>
 @endpush

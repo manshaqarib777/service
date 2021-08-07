@@ -18,6 +18,8 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use App\Repositories\CountryRepository;
 use Illuminate\Http\Request;
+use App\Repositories\PaymentRepository;
+use DB;
 class DashboardController extends Controller
 {
 
@@ -35,8 +37,10 @@ class DashboardController extends Controller
     /** @var  EarningRepository */
     private $earningRepository;
     private $countryRepository;
+    private $paymentRepository;
 
-    public function __construct(BookingRepository $bookingRepo, UserRepository $userRepo, EarningRepository $earningRepository, EProviderRepository $eProviderRepo,CountryRepository $countryRepository)
+
+    public function __construct(BookingRepository $bookingRepo, UserRepository $userRepo, EarningRepository $earningRepository, EProviderRepository $eProviderRepo,CountryRepository $countryRepository, PaymentRepository $paymentRepo)
     {
         parent::__construct();
         $this->bookingRepository = $bookingRepo;
@@ -44,6 +48,8 @@ class DashboardController extends Controller
         $this->eProviderRepository = $eProviderRepo;
         $this->earningRepository = $earningRepository;
         $this->countryRepository = $countryRepository;
+        $this->paymentRepository = $paymentRepo;
+
 
     }
 
@@ -63,19 +69,69 @@ class DashboardController extends Controller
         $country = $this->countryRepository->find($country_id);
         $countries = $this->countryRepository->all()->pluck('name','id');
 
-        $bookingsCount = $this->bookingRepository->whereHas('eService.country', function($q) use ($country_id){
-            return $q->where('countries.id',$country_id);
-        })->count();
 
-        $membersCount = $this->userRepository->where('country_id',$country_id)->count();
+        if (auth()->user()->hasRole('branch'))
+        {
+            $bookingsCount = $this->bookingRepository->whereHas('eService.country', function($q) use ($country_id){
+                return $q->where('countries.id',$country_id);
+            })->count();    
+            $membersCount = $this->userRepository->where('country_id',$country_id)->count();
+            $eprovidersCount = $this->eProviderRepository->where('country_id',$country_id)->count();
+            $eProviders = $this->eProviderRepository->where('country_id',$country_id)->limit(4)->get();
+            $earning = $this->paymentRepository->whereHas('user.country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            })->where('payments.payment_status_id', 2)->sum('amount');
+            $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
+        }
+        else if(auth()->user()->hasRole('provider'))
+        {
+
+            $eProviderId = DB::raw("json_extract(e_provider, '$.id')");
+            $bookingsCount = $this->bookingRepository->with("user")->with('eService.country')->with('eService.country')->with("bookingStatus")->with("payment")->with("payment.paymentStatus")->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
+                ->where('e_provider_users.user_id', auth()->id())
+                ->groupBy('bookings.id')
+                ->get()->count();
+    
+            $membersCount = $this->userRepository->where('id',auth()->id())->get()->count();
 
 
-        $eprovidersCount = $this->eProviderRepository->where('country_id',$country_id)->count();
+            $eprovidersCount = $this->eProviderRepository->with('country')
+            ->with("eProviderType")
+            ->join("e_provider_users", "e_provider_id", "=", "e_providers.id")
+            ->where('e_provider_users.user_id', auth()->id())
+            ->groupBy("e_providers.id")
+            ->select("e_providers.*")->get()->count();
+            $eProviders = $this->eProviderRepository->with('country')
+            ->with("eProviderType")
+            ->join("e_provider_users", "e_provider_id", "=", "e_providers.id")
+            ->where('e_provider_users.user_id', auth()->id())
+            ->groupBy("e_providers.id")
+            ->select("e_providers.*")->limit(4);
+            $earning = $this->paymentRepository->with("user.country")
+            ->with("paymentMethod")
+            ->with("paymentStatus")
+            ->join("bookings", "payments.id", "=", "bookings.payment_id")
+            ->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
+            ->where('e_provider_users.user_id', auth()->id())
+            ->where('payments.payment_status_id', 2)
+            ->groupBy('payments.id')
+            ->orderBy('payments.id', 'desc')
+            ->select('payments.*')->get()->sum('amount');
+            $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
 
-        $eProviders = $this->eProviderRepository->where('country_id',$country_id)->limit(4)->get();
+        }
+        else
+        {
+            $bookingsCount = $this->bookingRepository->count();
+            $membersCount = $this->userRepository->count();
+            $eprovidersCount = $this->eProviderRepository->count();
+            $eProviders = $this->eProviderRepository->limit(4)->get();
+            $earning = $this->paymentRepository->where('payments.payment_status_id',2)->sum('amount');
+            $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
 
-        $earning = $this->earningRepository->all()->sum('total_earning');
-        $ajaxEarningUrl = route('payments.byMonth', ['api_token' => auth()->user()->api_token]);
+        }
+
+
         //dd($ajaxEarningUrl);
         return view('dashboard.index')
             ->with("ajaxEarningUrl", $ajaxEarningUrl)

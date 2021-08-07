@@ -22,7 +22,7 @@ use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
-
+use DB;
 /**
  * Class PaymentController
  * @package App\Http\Controllers\API
@@ -163,12 +163,52 @@ class PaymentAPIController extends Controller
     {
         $payments = [];
         if (!empty($this->paymentRepository)) {
-            $payments = $this->paymentRepository->orderBy("created_at", 'asc')->all()->map(function ($row) {
-                $row['month'] = $row['created_at']->format('M');
-                return $row;
-            })->groupBy('month')->map(function ($row) {
-                return $row->sum('amount');
-            });
+            
+
+
+
+
+            if (auth()->user()->hasRole('branch'))
+            {
+                $payments = $this->paymentRepository->whereHas('user.country', function($q){
+                    return $q->where('countries.id',get_role_country_id('branch'));
+                })->where('payments.payment_status_id', 2)->orderBy("created_at",'asc')->get()->map(function ($row) {
+                    $row['month'] = $row['created_at']->format('M');
+                    return $row;
+                })->groupBy('month')->map(function ($row) {
+                    return $row->sum('amount');
+                });
+            }
+            else if (auth()->user()->hasRole('provider'))
+            {
+                $eProviderId = DB::raw("json_extract(e_provider, '$.id')");
+
+                $payments = $this->paymentRepository->with("user.country")
+                ->with("paymentMethod")
+                ->with("paymentStatus")
+                ->join("bookings", "payments.id", "=", "bookings.payment_id")
+                ->join("e_provider_users", "e_provider_users.e_provider_id", "=", $eProviderId)
+                ->where('e_provider_users.user_id', auth()->id())
+                ->where('payments.payment_status_id', 2)
+                ->groupBy('payments.id')
+                ->orderBy('payments.id', 'desc')
+                ->select('payments.*')->get()->map(function ($row) {
+                    $row['month'] = $row['created_at']->format('M');
+                    return $row;
+                })->groupBy('month')->map(function ($row) {
+                    return $row->sum('amount');
+                });
+            }
+            else
+            {
+                $payments = $this->paymentRepository->orderBy("created_at", 'asc')->all()->map(function ($row) {
+                    $row['month'] = $row['created_at']->format('M');
+                    return $row;
+                })->groupBy('month')->map(function ($row) {
+                    return $row->sum('amount');
+                });
+
+            }
         }
         return $this->sendResponse([array_values($payments->toArray()), array_keys($payments->toArray())], 'Payment retrieved successfully');
     }

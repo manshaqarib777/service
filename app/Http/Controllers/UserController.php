@@ -102,7 +102,15 @@ class UserController extends Controller
      */
     public function create()
     {
-        $role = $this->roleRepository->pluck('name', 'name');
+        if(!auth()->user()->hasRole('branch'))
+        {
+            $role = $this->roleRepository->pluck('name', 'name');
+        }
+        else
+        {
+            $role = $this->roleRepository->whereNotIn('id',[2,5])->pluck('name', 'name');
+
+        }
 
         $rolesSelected = [];
         $hasCustomField = in_array($this->userRepository->model(), setting('custom_field_models', []));
@@ -204,14 +212,22 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->hasRole('admin') && $id != auth()->id()) {
+        if ((!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('branch')) && $id != auth()->id()) {
             Flash::error('Permission denied');
             return redirect(route('users.index'));
         }
         $user = $this->userRepository->findWithoutFail($id);
         unset($user->password);
         $html = false;
-        $role = $this->roleRepository->pluck('name', 'name');
+        if(!auth()->user()->hasRole('branch'))
+        {
+            $role = $this->roleRepository->pluck('name', 'name');
+        }
+        else
+        {
+            $role = $this->roleRepository->whereNotIn('id',[2,5])->pluck('name', 'name');
+
+        }
         $rolesSelected = $user->getRoleNames()->toArray();
         $customFieldsValues = $user->customFieldsValues()->with('customField')->get();
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->userRepository->model());
@@ -248,7 +264,7 @@ class UserController extends Controller
             Flash::warning('This is only demo app you can\'t change this section ');
             return redirect(route('users.profile'));
         }
-        if (!auth()->user()->hasRole('admin') && $id != auth()->id()) {
+        if ((!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('branch')) && $id != auth()->id()) {
             Flash::error('Permission denied');
             return redirect(route('users.profile'));
         }

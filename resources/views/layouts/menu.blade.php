@@ -128,8 +128,8 @@
 @endcan
 
 {{--@can('bookings.index')--}}
-<li class="nav-item has-treeview {{ Request::is('bookings*') || Request::is('bookingStatuses*') || Request::is('deliveryAddresses*')? 'menu-open' : '' }}">
-    <a href="#" class="nav-link {{ Request::is('bookings*') || Request::is('bookingStatuses*') || Request::is('deliveryAddresses*')? 'active' : '' }}"> @if($icons)
+<li class="nav-item has-treeview {{ Request::is('bookings*') || Request::is('bookingStatuses*') || Request::is('deliveryAddresses*') || Request::is('deliveryTimes*') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ Request::is('bookings*') || Request::is('bookingStatuses*') || Request::is('deliveryAddresses*') || Request::is('deliveryTimes*') ? 'active' : '' }}"> @if($icons)
             <i class="nav-icon fas fa-calendar-check"></i>@endif
         <p>{{trans('lang.booking_plural')}} <i class="right fas fa-angle-left"></i>
         </p>
@@ -146,6 +146,12 @@
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('bookingStatuses*') ? 'active' : '' }}" href="{!! route('bookingStatuses.index') !!}">@if($icons)
                         <i class="nav-icon fas fa-server"></i>@endif<p>{{trans('lang.booking_status_plural')}}</p></a>
+            </li>
+        @endcan
+        @can('deliveryTimes.index')
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('deliveryTimes*') ? 'active' : '' }}" href="{!! route('deliveryTimes.index') !!}">@if($icons)
+                        <i class="nav-icon fa fa-shopping-bag"></i>@endif<p>{{trans('lang.delivery_time_plural')}}</p></a>
             </li>
         @endcan
 

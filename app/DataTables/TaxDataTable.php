@@ -33,6 +33,12 @@ class TaxDataTable extends DataTable
      */
     public function dataTable($query)
     {
+        if (auth()->user()->hasRole('client') || auth()->user()->hasRole('provider'))
+            $query = $query->where('user_id', auth()->id());
+        if (auth()->user()->hasRole('branch'))
+            $query = $query->with('country')->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
@@ -119,20 +125,7 @@ class TaxDataTable extends DataTable
      */
     public function query(Tax $model)
     {
-        if(auth()->user()->hasRole('branch')){
-            return $model->with('country')->whereHas('country', function($q){
-                return $q->where('countries.id',get_role_country_id('branch'));
-            })->select("taxes.*");
-        }
-        if(request()->get('country_id')){
-            return $model->with('country')->whereHas('country', function($q){
-                return $q->where('countries.id',request()->get('country_id'));
-            })->select("taxes.*");
-        }
-        else
-        {
-            return $model->newQuery()->with('country')->select("taxes.*");
-        }
+        return $model->newQuery()->with('country')->select("taxes.*");
     }
 
     /**

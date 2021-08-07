@@ -1288,6 +1288,20 @@ return [
     'state_plural' => 'States',
     'state_table' => 'State Table',
     'state_updated_at' => 'Updated At',
+    'delivery_time' => 'Delivery Time',
+    'delivery_time_create' => 'Create Delivery Time',
+    'delivery_time_desc' => 'Delivery Times Management',
+    'delivery_time_edit' => 'Edit Delivery Time',
+    'delivery_time_id' => 'Delivery Time',
+    'delivery_time_id_help' => 'Insert Delivery Time',
+    'delivery_time_id_placeholder' => 'Insert Delivery Time',
+    'delivery_time_name' => 'Name',
+    'delivery_time_name_help' => 'Insert Name',
+    'delivery_time_name_placeholder' => 'Insert Name',
+    'delivery_time_plural' => 'Delivery Times',
+    'delivery_time_table' => 'Delivery Times List',
+    'delivery_time_updated_at' => 'Updated At',
+    
 
 
 ];

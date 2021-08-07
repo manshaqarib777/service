@@ -32,14 +32,18 @@ class SlideDataTable extends DataTable
      */
     public function dataTable($query)
     {
+        if (auth()->user()->hasRole('client'))
+            $query = $query->where('user_id', auth()->id());
+        if (auth()->user()->hasRole('branch'))
+            $query = $query->where('country_id', get_role_country_id('branch'));
         $dataTable = new EloquentDataTable($query);
         $columns = array_column($this->getColumns(), 'data');
         $dataTable = $dataTable
             ->editColumn('text', function ($slide) {
                 return $slide->text;
             })
-            ->editColumn('country.name', function ($tax) {
-                return $tax['country']['name'];
+            ->editColumn('country.name', function ($slide) {
+                return $slide['country']['name'];
             })
             ->editColumn('button', function ($slide) {
                 return $slide->button;
@@ -177,7 +181,7 @@ class SlideDataTable extends DataTable
      */
     public function query(Slide $model)
     {
-        return $model->newQuery()->with("eService")->with("eProvider");
+        return $model->newQuery()->with("eService")->with("eProvider")->with("country")->select('slides.*');
     }
 
     /**

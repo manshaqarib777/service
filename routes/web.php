@@ -112,6 +112,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('addresses', 'AddressController')->except([
         'show'
     ]);
+    Route::resource('deliveryTimes', 'DeliveryTimeController')->except([
+        'show'
+    ]);
     Route::resource('awards', 'AwardController');
     Route::resource('experiences', 'ExperienceController');
 

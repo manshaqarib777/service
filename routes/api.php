@@ -82,7 +82,7 @@ Route::resource('options', 'API\OptionAPIController');
 Route::get('options/filter/{id}', 'API\OptionAPIController@filter');
 
 Route::get('countries', 'API\UserAPIController@countries');
-
+Route::resource('delivery_times', 'API\DeliveryTimeAPIController');
 Route::middleware('auth:api')->group(function () {
     Route::group(['middleware' => ['role:provider']], function () {
         Route::prefix('provider')->group(function () {

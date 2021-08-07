@@ -36,10 +36,11 @@ class FaqCategoryDataTable extends DataTable
         ->editColumn('updated_at',function($faq_category){
             return getDateColumn($faq_category,'updated_at');
         })
-            
-            
-            ->addColumn('action', 'faq_categories.datatables_actions')
-            ->rawColumns(array_merge($columns, ['action']));
+        ->editColumn('name', function ($faq_category) {
+            return $faq_category->name;
+        })        
+        ->addColumn('action', 'faq_categories.datatables_actions')
+        ->rawColumns(array_merge($columns, ['action']));
 
         return $dataTable;
     }
