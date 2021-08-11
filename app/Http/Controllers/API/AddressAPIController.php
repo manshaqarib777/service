@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Exceptions\RepositoryException;
+use Prettus\Validator\Exceptions\ValidatorException;
 
 /**
  * Class AddressController
@@ -86,5 +87,70 @@ class AddressAPIController extends Controller
         }
 
         return $this->sendResponse($address->toArray(), 'Address retrieved successfully');
+    }
+
+    public function store(Request $request)
+    {
+        $uniqueInput = $request->only("address");
+        $otherInput = $request->except("address");
+        try {
+            $deliveryAddress = $this->addressRepository->updateOrCreate($uniqueInput, $otherInput);
+
+        } catch (ValidatorException $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($deliveryAddress->toArray(), __('lang.saved_successfully', ['operator' => __('lang.address')]));
+    }
+
+    /**
+     * Update the specified DeliveryAddress in storage.
+     *
+     * @param int $id
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update($id, Request $request)
+    {
+        $deliveryAddress = $this->addressRepository->findWithoutFail($id);
+
+        if (empty($deliveryAddress)) {
+            return $this->sendError('Delivery Address not found');
+        }
+        $input = $request->all();
+        if ($input['is_default'] == true){
+            $this->addressRepository->initIsDefault($input['user_id']);
+        }
+        try {
+            $deliveryAddress = $this->addressRepository->update($input, $id);
+        } catch (ValidatorException $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($deliveryAddress->toArray(), __('lang.updated_successfully', ['operator' => __('lang.address')]));
+
+    }
+
+    /**
+     * Remove the specified Address from storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id)
+    {
+        $address = $this->addressRepository->findWithoutFail($id);
+
+        if (empty($address)) {
+            return $this->sendError('Delivery Address Not found');
+
+        }
+
+        $this->addressRepository->delete($id);
+
+        return $this->sendResponse($address, __('lang.deleted_successfully',['operator' => __('lang.address')]));
+
     }
 }
