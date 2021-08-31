@@ -65,7 +65,13 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $parentCategory = $this->categoryRepository->pluck('name', 'id');
+        $parentCategory = $this->categoryRepository;
+        if(auth()->user()->hasRole('branch')){
+            $parentCategory =$parentCategory->with("parentCategory",'country')->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        $parentCategory =$parentCategory->pluck('name', 'id');
         $countries = $this->countryRepository->all()->pluck('name','id');
 
         $hasCustomField = in_array($this->categoryRepository->model(), setting('custom_field_models', []));
@@ -134,7 +140,13 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = $this->categoryRepository->findWithoutFail($id);
-        $parentCategory = $this->categoryRepository->pluck('name', 'id')->prepend(__('lang.category_parent_id_placeholder'), '');
+        $parentCategory = $this->categoryRepository;
+        if(auth()->user()->hasRole('branch')){
+            $parentCategory =$parentCategory->with("parentCategory",'country')->whereHas('country', function($q){
+                return $q->where('countries.id',get_role_country_id('branch'));
+            });
+        }
+        $parentCategory =$parentCategory->pluck('name', 'id');
         $countries = $this->countryRepository->all()->pluck('name','id');
 
         if (empty($category)) {
